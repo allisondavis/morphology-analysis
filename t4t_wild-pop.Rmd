@@ -1,0 +1,19 @@
+---
+title: "t4t_wild-pop"
+author: "Allison Davis"
+date: "November 21, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(curl)
+
+lat <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirror-exp_wild-pop_rescored-raw.csv")
+
+lat <- read.csv(rawRE, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
+```
