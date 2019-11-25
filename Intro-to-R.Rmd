@@ -1,0 +1,71 @@
+---
+title: "Intro to R"
+author: "Allison Davis"
+date: "November 25, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Intro
+  
+In this intro, you'll learn the basic coding skills needed to run analyses on our fish data. This is certinaly not an exhaustive list of basic codes, just the ones you'll need for the tests we will run. ***If you ever get stuck,*** google it! There are tons of resources that walk you through each step.
+  
+#### Orientation
+
+In R studio, your screen will be separated into 4 windows. 
+  
+The top right window will display 4 different tabs: environment, history, connections, and Git.
+  * environment:
+  * history:
+  * connections: never really use, can ignore
+  * git:
+
+The bottom right window will display 5 tabs: files, plots, packages, help, viewer.
+  * files:
+  * plots:
+  * packages:
+  * help:
+  * viewer:
+  
+The top left window is your script. Here you can type away, both functions/things you want to run as well as the annotation for each step (your descriptions on what/why you're doing a bit of code).
+  * each line is associated with a number, which can help when errors say "line 49 blah blah blah"
+  * if you have more than one R script open, or other document types (i.e. Rmd), these will show up as additional tabs on the top of this section
+  * you can run your code by placing the cursor at the beginning or end of the line of code and hitting CTRL R
+      - this is specifically a windows thing (lab laptops are windows), not sure the shortcut for Macs
+      
+The bottom left of your screen is your console. This is where the results of your R code will pop up. You can also directly type code into the console following the > , but this code will not be saved once you exit R -only the code saved in your R script/ R markdowns (Rmd) will be accessable. 
+  * there is also a terminal tab in this window. This is only useful to us when we're connecting our files to Git (online repositories), which we'll talk more about later.
+
+#### How to code
+
+In R you can have vectors, BLAH BLAH BLAH. (talk about each element, how they're different and what you use them for --> give examples)
+  
+
+It is easier to manipulate these elements when they're assigned to a particular name.
+
+  * to assign, you use:  <- 
+      - assignments work for singular numbers, vectors of numbers, funtions, vectors of words, tables etc.
+      - make sure to talk about the c() fxn (what it means and why you need it)
+      
+  * don't use an equals sign! While this will assign the element to the name correctly, it will get super confusing when you start using functions.
+  
+  * to view the assigned values, either type the name, or place an extra set of parentheses around the assignment code (this automatically prints the values)
+  
+  * Example:
+```{r}
+a <- 789
+a
+
+v <- c(1,3,5,7)
+v
+
+(w <- 17*3)
+
+(farm <- c("cow", "pig","chicken"))
+
+```
+
+
