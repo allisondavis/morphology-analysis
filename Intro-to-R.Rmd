@@ -128,5 +128,6 @@ ggplot --> maybe include a detailed document at end at all the little things ggp
   linear regression?
   ANOVA?
 
+show examples of each --> maybe create some fake data? or use some of my mirror data?
 
 

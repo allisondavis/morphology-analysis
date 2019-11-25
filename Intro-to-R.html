@@ -214,8 +214,8 @@ $(document).ready(function () {
 <ul>
 <li>this will provide some practice on the basics as well, so try the challenges!</li>
 </ul>
-<p>If you google and the result requires a new package, you can install a package using info in [this link here] (<a href="https://difiore.github.io/applied-data-analysis-s2019/module-03/module-03.html" class="uri">https://difiore.github.io/applied-data-analysis-s2019/module-03/module-03.html</a>)</p>
-<p>[this is link for git version control] (<a href="https://difiore.github.io/applied-data-analysis-s2019/module-05/module-05.html" class="uri">https://difiore.github.io/applied-data-analysis-s2019/module-05/module-05.html</a>)</p>
+<p>If you google and the result requires a new package, you can install a package using info in this link here: <a href="https://difiore.github.io/applied-data-analysis-s2019/module-03/module-03.html" class="uri">https://difiore.github.io/applied-data-analysis-s2019/module-03/module-03.html</a></p>
+<p>this is link for git version control <a href="https://difiore.github.io/applied-data-analysis-s2019/module-05/module-05.html" class="uri">https://difiore.github.io/applied-data-analysis-s2019/module-05/module-05.html</a></p>
 <p>In R you can have vectors, BLAH BLAH BLAH. (talk about each object, how they’re different and what you use them for –&gt; give examples)</p>
 <p>It is easier to manipulate these objects when they’re assigned to a particular name.</p>
 <ul>
@@ -238,6 +238,27 @@ v</code></pre>
 <pre><code>## [1] 51</code></pre>
 <pre class="r"><code>(farm &lt;- c(&quot;cow&quot;, &quot;pig&quot;,&quot;chicken&quot;))</code></pre>
 <pre><code>## [1] &quot;cow&quot;     &quot;pig&quot;     &quot;chicken&quot;</code></pre>
+</div>
+<div id="data-collection" class="section level4">
+<h4>Data collection</h4>
+<p>Here I’ll show you how to import the excel data from your github and into R for analyses.</p>
+<p>packages needed: curl</p>
+<p>library(curl)</p>
+<p>name &lt;- curl(“url_of_your_RAW_data”) make sure you click the RAW button on github before copying the url –&gt; will not work without this!</p>
+<p>name &lt;- read.csv(name, header = TRUE, sep = “,”, stringsAsFactors = TRUE) make sure the name is the same! (in both places)</p>
+<p>head(name) this will give you the first couple of rows of all columns to make sure you imported the data correctly</p>
+<p>If you want to create another data frame with only certain elements, you can select these from the df you just imported in –&gt; for example, if you wanted to separate amazons and sailfins into two different dataframes (useful for analyses on each species separately):</p>
+<p>amazons_raw &lt;- name[name$X.U.FEFF.SPP ==“P.form”,] how to read this: from the dataframe NAME we will select[from this dataframe ($=the columns)species (== that exactly equal) “P.form”, all rows] by leaving the comma at the end, you ensuring that all rows that match the column specification are selected</p>
+</div>
+<div id="analyses" class="section level4">
+<h4>Analyses</h4>
+<p>Here I’ll introduce some of the basic functions that we use in analyses, how to use them, and what their results tell you.</p>
+<p>summary() apply() for variance and sd (mention that you can use this for any function) var() t.test() hist() var.test() Outlier() –&gt; need DescTools package ANOVA ANCOVA mixed linear models? linear regression?</p>
+</div>
+<div id="graphing" class="section level4">
+<h4>Graphing</h4>
+<p>talk about basic plot in R –&gt; what can you do, how it’s useful ggplot –&gt; maybe include a detailed document at end at all the little things ggplot can do boxplots linear regression? ANOVA?</p>
+<p>show examples of each –&gt; maybe create some fake data? or use some of my mirror data?</p>
 </div>
 </div>
 
