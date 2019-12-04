@@ -47,11 +47,17 @@ lat_pct <- lat_avg*100
 pcts <- rbind(form_pct, lat_pct)
 pcts
 
-df <- data.frame(x, form_pct, lat_pct)
 x <- c(1,2,3,4,5,6,7,8,9,10)
+
+df <- data.frame(x, form_pct, lat_pct)
+
 
 library(ggplot2)
 
-ggplot(df, aes(x)) + geom_line(aes(y=form_pct), color="red") + geom_line(aes(y=lat_pct), color="green") + ylab("Times in section (%)") + xlab("Sections") 
+ggplot(df, aes(x)) + geom_line(aes(y=form_pct, color="Amazon"), size= 1.5) + geom_line(aes(y=lat_pct, color="Sailfin"), size = 1.5)  +ylab("Times in section (%)\n") + xlab("Sections") + geom_point(aes(y=form_pct, color="Amazon"),size=2, shape=21, fill="white") + geom_point(aes(y=lat_pct, color="Sailfin"), size=2, shape=21, fill="white") + scale_shape(solid=FALSE) +theme_classic() + scale_color_manual(values = c("#9C964A", "#FAD77B")) + scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + theme(legend.title=element_blank()) + theme(text = element_text(size = 16))
+
+
+
+wilcox.test(form_avg,lat_avg, alternative = "greater")
 
 ```
