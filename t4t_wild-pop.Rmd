@@ -12,8 +12,46 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(curl)
 
-lat <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirror-exp_wild-pop_rescored-raw.csv")
+raw <- curl("https://raw.githubusercontent.com/allisondavis/t4t_wild-pop/master/t4t_quick-look_SUTS.csv")
 
-lat <- read.csv(rawRE, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+raw <- read.csv(raw, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
+head(raw)
+
+form <- raw[raw$SPP =="form",]
+form <- form[-c(15:26)]
+
+lat <- raw[raw$SPP =="lat",]
+lat <- lat[-c(15:26)]
+
+
+form_sums <- rowSums(form[5:14])
+form <- cbind(form, form_sums)
+
+form_pct <- lapply(form[5:14], function(x){x/form_sums})
+form <- cbind(form, form_pct)
+form
+
+lat_sums <- rowSums(lat[5:14])
+lat <- cbind(lat, lat_sums)
+
+lat_pct <- lapply(lat[5:14], function(x) {x/lat_sums})
+lat <- cbind(lat, lat_pct)
+
+form_avg <- apply(form[16:25], 2, mean)
+form_pct <- form_avg*100
+
+lat_avg <- apply(lat[16:25], 2, mean)
+lat_pct <- lat_avg*100
+
+pcts <- rbind(form_pct, lat_pct)
+pcts
+
+df <- data.frame(x, form_pct, lat_pct)
+x <- c(1,2,3,4,5,6,7,8,9,10)
+
+library(ggplot2)
+
+ggplot(df, aes(x)) + geom_line(aes(y=form_pct), color="red") + geom_line(aes(y=lat_pct), color="green") + ylab("Times in section (%)") + xlab("Sections") 
 
 ```
