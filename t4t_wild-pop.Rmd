@@ -24,11 +24,11 @@ form <- form[-c(15:26)]
 lat <- raw[raw$SPP =="lat",]
 lat <- lat[-c(15:26)]
 
-
-form_sums <- rowSums(form[5:14])
+#calculating average % spent in each section
+form_sums <- rowSums(form[5:14]) #get total possible obs #
 form <- cbind(form, form_sums)
 
-form_pct <- lapply(form[5:14], function(x){x/form_sums})
+form_pct <- lapply(form[5:14], function(x){x/form_sums}) #get avg numb spent in each section for each indiv
 form <- cbind(form, form_pct)
 form
 
@@ -38,8 +38,8 @@ lat <- cbind(lat, lat_sums)
 lat_pct <- lapply(lat[5:14], function(x) {x/lat_sums})
 lat <- cbind(lat, lat_pct)
 
-form_avg <- apply(form[16:25], 2, mean)
-form_pct <- form_avg*100
+form_avg <- apply(form[16:25], 2, mean) #get avg numb spent in each section for whole spp
+form_pct <- form_avg*100                #get percentage
 
 lat_avg <- apply(lat[16:25], 2, mean)
 lat_pct <- lat_avg*100
@@ -47,17 +47,30 @@ lat_pct <- lat_avg*100
 pcts <- rbind(form_pct, lat_pct)
 pcts
 
+
+#to plot avg times spent in each section per species
 x <- c(1,2,3,4,5,6,7,8,9,10)
 
 df <- data.frame(x, form_pct, lat_pct)
-
 
 library(ggplot2)
 
 ggplot(df, aes(x)) + geom_line(aes(y=form_pct, color="Amazon"), size= 1.5) + geom_line(aes(y=lat_pct, color="Sailfin"), size = 1.5)  +ylab("Times in section (%)\n") + xlab("Sections") + geom_point(aes(y=form_pct, color="Amazon"),size=2, shape=21, fill="white") + geom_point(aes(y=lat_pct, color="Sailfin"), size=2, shape=21, fill="white") + scale_shape(solid=FALSE) +theme_classic() + scale_color_manual(values = c("#9C964A", "#FAD77B")) + scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + theme(legend.title=element_blank()) + theme(text = element_text(size = 16))
 
+```
+
+
+#### Mann-Whitney U-test (AKA Wilcox Rank Sum Test)
+
+[wikipedia] A nonparametric test of the null hypothesis that it is equally likely that a randomly selected value from one population will be less than or greater than a randomly selected value from a second population.
+
+This test can be used to investigate whether two independent samples were selected from populations having the same distribution. A similar nonparametric test used on dependent samples is the Wilcoxon signed-rank test.
+
+```{r}
 
 
 wilcox.test(form_avg,lat_avg, alternative = "greater")
+
+wilcox.test(form_pct,lat_pct, alternative = "greater")
 
 ```
