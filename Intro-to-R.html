@@ -197,19 +197,19 @@ $(document).ready(function () {
 </div>
 
 
-<div id="intro" class="section level2">
+<div id="intro" class="section level2 tabset tabset-fade tabset-pills">
 <h2>Intro</h2>
 <p>In this intro, you’ll learn the basic coding skills needed to run analyses on our fish data. This is certinaly not an exhaustive list of basic codes, just the ones you’ll need for the tests we will run. <strong><em>If you ever get stuck,</em></strong> google it! There are tons of resources that walk you through each step.</p>
-<div id="orientation" class="section level4">
-<h4>Orientation</h4>
+<div id="orientation" class="section level3">
+<h3>Orientation</h3>
 <p>In R studio, your screen will be separated into 4 windows.</p>
 <p>The top right window will display 4 different tabs: environment, history, connections, and Git. * environment: * history: * connections: never really use, can ignore * git:</p>
 <p>The bottom right window will display 5 tabs: files, plots, packages, help, viewer. * files: * plots: * packages: * help: * viewer:</p>
 <p>The top left window is your script. Here you can type away, both functions/things you want to run as well as the annotation for each step (your descriptions on what/why you’re doing a bit of code). * each line is associated with a number, which can help when errors say “line 49 blah blah blah” * if you have more than one R script open, or other document types (i.e. Rmd), these will show up as additional tabs on the top of this section * you can run your code by placing the cursor at the beginning or end of the line of code and hitting CTRL R - this is specifically a windows thing (lab laptops are windows), not sure the shortcut for Macs</p>
 <p>The bottom left of your screen is your console. This is where the results of your R code will pop up. You can also directly type code into the console following the &gt; , but this code will not be saved once you exit R -only the code saved in your R script/ R markdowns (Rmd) will be accessable. * there is also a terminal tab in this window. This is only useful to us when we’re connecting our files to Git (online repositories), which we’ll talk more about later.</p>
 </div>
-<div id="how-to-code" class="section level4">
-<h4>How to code</h4>
+<div id="how-to-code" class="section level3">
+<h3>How to code</h3>
 <p>For some basics on R language try the link here: <a href="https://difiore.github.io/applied-data-analysis-s2019/module-04/module-04.html" class="uri">https://difiore.github.io/applied-data-analysis-s2019/module-04/module-04.html</a></p>
 <ul>
 <li>this will provide some practice on the basics as well, so try the challenges!</li>
@@ -239,24 +239,102 @@ v</code></pre>
 <pre class="r"><code>(farm &lt;- c(&quot;cow&quot;, &quot;pig&quot;,&quot;chicken&quot;))</code></pre>
 <pre><code>## [1] &quot;cow&quot;     &quot;pig&quot;     &quot;chicken&quot;</code></pre>
 </div>
-<div id="data-collection" class="section level4">
-<h4>Data collection</h4>
+<div id="data-collection" class="section level3">
+<h3>Data collection</h3>
 <p>Here I’ll show you how to import the excel data from your github and into R for analyses.</p>
 <p>packages needed: curl</p>
-<p>library(curl)</p>
-<p>name &lt;- curl(“url_of_your_RAW_data”) make sure you click the RAW button on github before copying the url –&gt; will not work without this!</p>
-<p>name &lt;- read.csv(name, header = TRUE, sep = “,”, stringsAsFactors = TRUE) make sure the name is the same! (in both places)</p>
-<p>head(name) this will give you the first couple of rows of all columns to make sure you imported the data correctly</p>
+<p><code>library(curl)</code></p>
+<p><code>name &lt;- curl(&quot;url_of_your_RAW_data&quot;)</code></p>
+<ul>
+<li>Make sure you click the RAW button on github before copying the url –&gt; will not work without this!</li>
+</ul>
+<p><code>name &lt;- read.csv(name, header = TRUE, sep = &quot;,&quot;, stringsAsFactors = TRUE)</code></p>
+<ul>
+<li>make sure the name is the same! (in both places)</li>
+</ul>
+<p><code>head(name)</code></p>
+<ul>
+<li>this will give you the first couple of rows of all columns to make sure you imported the data correctly</li>
+</ul>
 <p>If you want to create another data frame with only certain elements, you can select these from the df you just imported in –&gt; for example, if you wanted to separate amazons and sailfins into two different dataframes (useful for analyses on each species separately):</p>
-<p>amazons_raw &lt;- name[name$X.U.FEFF.SPP ==“P.form”,] how to read this: from the dataframe NAME we will select[from this dataframe ($=the columns)species (== that exactly equal) “P.form”, all rows] by leaving the comma at the end, you ensuring that all rows that match the column specification are selected</p>
+<p><code>amazons_raw &lt;- name[name$X.U.FEFF.SPP ==&quot;P.form&quot;,]</code></p>
+<ul>
+<li>How to read this: from the dataframe NAME we will select[from this dataframe ($=the columns)species (== that exactly equal) “P.form”, all rows]
+<ul>
+<li>by leaving the comma at the end, you ensuring that all rows that match the column specification are selected</li>
+</ul></li>
+</ul>
 </div>
-<div id="analyses" class="section level4">
-<h4>Analyses</h4>
+<div id="analyses" class="section level3 tabset tabset-fade tabset-pills">
+<h3>Analyses</h3>
+<p><em>Select the tab that corresponds to the experiment you will analyze.</em></p>
+<div id="mirror-experiment" class="section level4">
+<h4>Mirror experiment</h4>
 <p>Here I’ll introduce some of the basic functions that we use in analyses, how to use them, and what their results tell you.</p>
-<p>summary() apply() for variance and sd (mention that you can use this for any function) var() t.test() hist() var.test() Outlier() –&gt; need DescTools package ANOVA ANCOVA mixed linear models? linear regression?</p>
+<ul>
+<li>summary()</li>
+<li>apply() for variance and sd (mention that you can use this for any function)</li>
+<li>var()</li>
+<li>t.test()</li>
+<li>var.test()</li>
+<li>Outlier() –&gt; need DescTools package</li>
+<li>ANOVA</li>
+<li>ANCOVA</li>
+<li>mixed linear models?</li>
+<li>linear regression?</li>
+</ul>
 </div>
-<div id="graphing" class="section level4">
-<h4>Graphing</h4>
+<div id="tit-for-tat" class="section level4">
+<h4>Tit-for-tat</h4>
+<p>Here I’ll introduce some of the basic functions that we use in analyses, how to use them, and what their results tell you.</p>
+<ul>
+<li>function(x) {}
+<ul>
+<li>this is the broades type, as it allows you to create whatever function you want (particularly ones not included in basic R)</li>
+<li>when creating a function, it does not matter what letters you use in the parentheses or brackets, but you must be consistent. The parentheses have the names of the variables (ex. x, y, z) and the brackets have the actual function being performed (ex. {x/2 * 100})</li>
+<li>always name your function! It’s useless if you can’t call it back with a name.</li>
+<li>example: saw we have temperature data for cities around Texas all in fahrenheit, and would like to present it in celcius <code>fahrenheit_to_celsius &lt;- function(temp_F) {</code> <code>temp_C &lt;- (temp_F - 32) * 5 / 9</code> <code>return(temp_C)</code> <code>}</code>
+<ul>
+<li>can also be written more generally as: <code>fahrenheit_to_celsius &lt;- function(x) {(x-32)* (5/9)}</code></li>
+</ul></li>
+</ul></li>
+<li>apply()
+<ul>
+<li>this allows you to apply a function to a broad amount of data all at once</li>
+<li>it takes three arguments: apply(dataframe, 1OR2, function)
+<ul>
+<li>dataframe: the name of your dataframe</li>
+<li>1OR2: 1 applies the function by row; 2 applies the function by column</li>
+<li>funtion: any function in basic package or that you specify (such as sum or mean)</li>
+</ul></li>
+<li>example: say we have a dataframe of 30 people (rando) and 3 columns for age, weight and height. <code>apply(rando, 2, mean)</code>
+<ul>
+<li>this will give the average of all the ages, all the weights, and all the heights for our whole set.</li>
+</ul></li>
+</ul></li>
+<li>lapply()
+<ul>
+<li>this is very similar to apply, but is specific for lists (will take lists and give lists). This is useful when we want to select certain columns from our dataframe.</li>
+<li>it takes two arguments: lapply(list, function)</li>
+<li>list: this can be a simple list that we’ve created or a selection of columns from our original dataframe (dataframe[2:3])</li>
+<li>function: any function in basic package or one you specify</li>
+<li>example: say (for whatever reason) weight and height were entered as percentages and we wanted to get the original value, we can create our own function for this. <code>lapply(rando[2:3], funtion(x) {x/100})</code></li>
+<li>this will divide the values for columns two and three (so weight and height) by 100.</li>
+</ul></li>
+<li>cbind() OR rbind()</li>
+<li>wilcox.test()</li>
+</ul>
+</div>
+<div id="complex-maze" class="section level4">
+<h4>Complex Maze</h4>
+<p>Here I’ll introduce some of the basic functions that we use in analyses, how to use them, and what their results tell you.</p>
+<ul>
+<li>t.test()</li>
+</ul>
+</div>
+</div>
+<div id="graphing" class="section level3">
+<h3>Graphing</h3>
 <p>talk about basic plot in R –&gt; what can you do, how it’s useful ggplot –&gt; maybe include a detailed document at end at all the little things ggplot can do boxplots linear regression? ANOVA?</p>
 <p>show examples of each –&gt; maybe create some fake data? or use some of my mirror data?</p>
 </div>

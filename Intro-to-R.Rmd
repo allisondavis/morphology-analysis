@@ -9,11 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Intro
+## Intro {.tabset .tabset-fade .tabset-pills}
   
 In this intro, you'll learn the basic coding skills needed to run analyses on our fish data. This is certinaly not an exhaustive list of basic codes, just the ones you'll need for the tests we will run. ***If you ever get stuck,*** google it! There are tons of resources that walk you through each step.
   
-#### Orientation
+### Orientation
 
 In R studio, your screen will be separated into 4 windows. 
   
@@ -39,7 +39,7 @@ The top left window is your script. Here you can type away, both functions/thing
 The bottom left of your screen is your console. This is where the results of your R code will pop up. You can also directly type code into the console following the > , but this code will not be saved once you exit R -only the code saved in your R script/ R markdowns (Rmd) will be accessable. 
   * there is also a terminal tab in this window. This is only useful to us when we're connecting our files to Git (online repositories), which we'll talk more about later.
 
-#### How to code
+### How to code
 
 For some basics on R language try the link here: https://difiore.github.io/applied-data-analysis-s2019/module-04/module-04.html
 
@@ -77,50 +77,101 @@ v
 ```
 
 
-#### Data collection
+### Data collection
 
 Here I'll show you how to import the excel data from your github and into R for analyses. 
 
 packages needed: curl
 
-library(curl)
+`library(curl)`
 
-name <- curl("url_of_your_RAW_data")
-  make sure you click the RAW button on github before copying the url --> will not work without this!
+`name <- curl("url_of_your_RAW_data")`
   
-name <- read.csv(name, header = TRUE, sep = ",", stringsAsFactors = TRUE)
-  make sure the name is the same! (in both places)
+  * Make sure you click the RAW button on github before copying the url --> will not work without this!
 
-head(name)
-  this will give you the first couple of rows of all columns to make sure you imported the data correctly
+`name <- read.csv(name, header = TRUE, sep = ",", stringsAsFactors = TRUE)`
+  
+  * make sure the name is the same! (in both places)
+
+`head(name)`
+  
+  * this will give you the first couple of rows of all columns to make sure you imported the data correctly
   
 If you want to create another data frame with only certain elements, you can select these from the df you just imported in --> for example, if you wanted to separate amazons and sailfins into two different dataframes (useful for analyses on each species separately):
 
-amazons_raw <- name[name$X.U.FEFF.SPP =="P.form",]
-  how to read this: from the dataframe NAME we will select[from this dataframe ($=the columns)species (== that exactly equal) "P.form", all rows]
-  by leaving the comma at the end, you ensuring that all rows that match the column specification are selected
+`amazons_raw <- name[name$X.U.FEFF.SPP =="P.form",]`
+
+  * How to read this: from the dataframe NAME we will select[from this dataframe ($=the columns)species (== that exactly equal) "P.form", all rows]
+    + by leaving the comma at the end, you ensuring that all rows that match the column specification are selected
   
 
 
 
-#### Analyses
+### Analyses {.tabset .tabset-fade .tabset-pills}
+
+*Select the tab that corresponds to the experiment you will analyze.*
+
+#### Mirror experiment
 
 Here I'll introduce some of the basic functions that we use in analyses, how to use them, and what their results tell you. 
 
-summary()
-apply() for variance and sd (mention that you can use this for any function)
-var()
-t.test()
-hist()
-var.test()
-Outlier() --> need DescTools package
-ANOVA
-ANCOVA
-mixed linear models?
-linear regression?
+  * summary()
+  * apply() for variance and sd (mention that you can use this for any function)
+  * var()
+  * t.test()
+  * var.test()
+  * Outlier() --> need DescTools package
+  * ANOVA
+  * ANCOVA
+  * mixed linear models?
+  * linear regression?
+  
+#### Tit-for-tat
+
+Here I'll introduce some of the basic functions that we use in analyses, how to use them, and what their results tell you.
+
+  * function(x) {}
+    + this is the broades type, as it allows you to create whatever function you want (particularly ones not included in basic R)
+    + when creating a function, it does not matter what letters you use in the parentheses or brackets, but you must be consistent. The parentheses have the names of the variables (ex. x, y, z) and the brackets have the actual function being performed (ex. {x/2 * 100})
+    + always name your function! It's useless if you can't call it back with a name.
+    + example: saw we have temperature data for cities around Texas all in fahrenheit, and would like to present it in celcius
+  `fahrenheit_to_celsius <- function(temp_F) {`
+  `temp_C <- (temp_F - 32) * 5 / 9`
+  `return(temp_C)`
+`}`
+        - can also be written more generally as:
+  `fahrenheit_to_celsius <- function(x) {(x-32)* (5/9)}`
+
+  * apply()
+    + this allows you to apply a function to a broad amount of data all at once
+    + it takes three arguments: apply(dataframe, 1OR2, function)
+        - dataframe: the name of your dataframe
+        - 1OR2: 1 applies the function by row; 2 applies the function by column
+        - funtion: any function in basic package or that you specify (such as sum or mean)
+    + example: say we have a dataframe of 30 people (rando) and 3 columns for age, weight and height.
+    `apply(rando, 2, mean)`
+        - this will give the average of all the ages, all the weights, and all the heights for our whole set.
+      
+  * lapply()
+    + this is very similar to apply, but is specific for lists (will take lists and give lists). This is useful when we want to select certain columns from our dataframe.
+    + it takes two arguments: lapply(list, function)
+      - list: this can be a simple list that we've created or a selection of columns from our original dataframe (dataframe[2:3])
+      - function: any function in basic package or one you specify
+    + example: say (for whatever reason) weight and height were entered as percentages and we wanted to get the original value, we can create our own function for this.
+    `lapply(rando[2:3], funtion(x) {x/100})`
+      - this will divide the values for columns two and three (so weight and height) by 100.
+      
+  * cbind() OR rbind()
+  * wilcox.test()
+  
+#### Complex Maze
+
+Here I'll introduce some of the basic functions that we use in analyses, how to use them, and what their results tell you.
+
+  * t.test()
 
 
-#### Graphing
+### Graphing
 
 talk about basic plot in R --> what can you do, how it's useful
 ggplot --> maybe include a detailed document at end at all the little things ggplot can do
