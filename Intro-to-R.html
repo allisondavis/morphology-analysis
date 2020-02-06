@@ -203,8 +203,8 @@ $(document).ready(function () {
 <div id="orientation" class="section level3">
 <h3>Orientation</h3>
 <p>In R studio, your screen will be separated into 4 windows.</p>
-<p>The top right window will display 4 different tabs: environment, history, connections, and Git. * environment: * history: * connections: never really use, can ignore * git:</p>
-<p>The bottom right window will display 5 tabs: files, plots, packages, help, viewer. * files: * plots: * packages: * help: * viewer:</p>
+<p>The top right window will display 4 different tabs: environment, history, connections, and Git. * environment: will show you all of the current values and functions that you’ve created and run. * history: will show you all of the code actually run since you’ve opened R up. * connections: never really use, can ignore * git: shows you which files have been saved, and allows you to connect to your internet repository.</p>
+<p>The bottom right window will display 5 tabs: files, plots, packages, help, viewer. * files: will show you all the files included in your R project folder. * plots: will diplay any plots run using the basic plot functions in R. * packages: will show you all the packages you’ve downloaded. * help: allows you to search function or package names to provide documentation (i.e. what arguments a function requires) * viewer: not really sure what this is to be honest…</p>
 <p>The top left window is your script. Here you can type away, both functions/things you want to run as well as the annotation for each step (your descriptions on what/why you’re doing a bit of code). * each line is associated with a number, which can help when errors say “line 49 blah blah blah” * if you have more than one R script open, or other document types (i.e. Rmd), these will show up as additional tabs on the top of this section * you can run your code by placing the cursor at the beginning or end of the line of code and hitting CTRL R - this is specifically a windows thing (lab laptops are windows), not sure the shortcut for Macs</p>
 <p>The bottom left of your screen is your console. This is where the results of your R code will pop up. You can also directly type code into the console following the &gt; , but this code will not be saved once you exit R -only the code saved in your R script/ R markdowns (Rmd) will be accessable. * there is also a terminal tab in this window. This is only useful to us when we’re connecting our files to Git (online repositories), which we’ll talk more about later.</p>
 </div>
@@ -215,14 +215,14 @@ $(document).ready(function () {
 <li>this will provide some practice on the basics as well, so try the challenges!</li>
 </ul>
 <p>If you google and the result requires a new package, you can install a package using info in this link here: <a href="https://difiore.github.io/applied-data-analysis-s2019/module-03/module-03.html" class="uri">https://difiore.github.io/applied-data-analysis-s2019/module-03/module-03.html</a></p>
-<p>this is link for git version control <a href="https://difiore.github.io/applied-data-analysis-s2019/module-05/module-05.html" class="uri">https://difiore.github.io/applied-data-analysis-s2019/module-05/module-05.html</a></p>
-<p>In R you can have vectors, BLAH BLAH BLAH. (talk about each object, how they’re different and what you use them for –&gt; give examples)</p>
-<p>It is easier to manipulate these objects when they’re assigned to a particular name.</p>
+<p>This is link for git version control <a href="https://difiore.github.io/applied-data-analysis-s2019/module-05/module-05.html" class="uri">https://difiore.github.io/applied-data-analysis-s2019/module-05/module-05.html</a></p>
+<p>When you are performing analyses that you want to share it’s best to use R markdown documents. These documents allow you to present your code to people who don’t have R downloaded on their computer. Instead, your code can be shared as an html, pdf, powerpoint etc. <strong><em>For this lab,</em></strong> use R markdowns (Rmd) to perform and document your analyses. For details on Rmd formating click <a href="https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf"> here.</a></p>
+<p><strong>To review:</strong></p>
+<p>It is easier to manipulate objects in R when they’re assigned to a particular name.</p>
 <ul>
 <li>to assign, you use: &lt;-
 <ul>
 <li>assignments work for singular numbers, vectors of numbers, funtions, vectors of words, tables etc.</li>
-<li>make sure to talk about the c() fxn (what it means and why you need it)</li>
 </ul></li>
 <li><p>don’t use an equals sign! While this will assign the object to the name correctly, it will get super confusing when you start using functions.</p></li>
 <li><p>to view the assigned values, either type the name, or place an extra set of parentheses around the assignment code (this automatically prints the values)</p></li>
@@ -238,6 +238,9 @@ v</code></pre>
 <pre><code>## [1] 51</code></pre>
 <pre class="r"><code>(farm &lt;- c(&quot;cow&quot;, &quot;pig&quot;,&quot;chicken&quot;))</code></pre>
 <pre><code>## [1] &quot;cow&quot;     &quot;pig&quot;     &quot;chicken&quot;</code></pre>
+<ul>
+<li>side note: the concatenate function [c()] allows you to combine objects (numbers, words, combos) into a single vector. If you tried to assign just the numbers 1,3,5,7 to v, R will throw an error because it does not understand that this is one group, it only sees numbers with no instructions on what to do with them. By adding c(1,3,5,7), you’re telling R that you want to concatenate (or link) together these numbers, and assing that grouping or vector of numbers to the letter v.</li>
+</ul>
 </div>
 <div id="data-collection" class="section level3">
 <h3>Data collection</h3>
@@ -321,8 +324,22 @@ v</code></pre>
 <li>example: say (for whatever reason) weight and height were entered as percentages and we wanted to get the original value, we can create our own function for this. <code>lapply(rando[2:3], funtion(x) {x/100})</code></li>
 <li>this will divide the values for columns two and three (so weight and height) by 100.</li>
 </ul></li>
-<li>cbind() OR rbind()</li>
-<li>wilcox.test()</li>
+<li>cbind() OR rbind()
+<ul>
+<li>this stands for column bind or row bind. It allows you to add the results of a funtion or command to the end of your current dataset.</li>
+<li>it takes two arguments: cbind(original dataset name, new column name) OR rbind(original dataset name, new row name)</li>
+<li>make sure you have the same number of rows or columns as the original dataset, it will report an error or place values in the incorrect spot if now!</li>
+<li>example: say you wanted to add the results from you lapply function to your dataset as new columns <code>new &lt;- lapply(rando[2:3], function(x) {x/100})</code> <code>rando &lt;- cbind(rando, new_values)</code></li>
+<li>side note: since it is more than one column, it may not rename them using new_values. Instead it will repeat the original column names.</li>
+</ul></li>
+<li>rowSums()
+<ul>
+<li>this allows you to sum all the values within a row throughout a dataset</li>
+<li>it takes one argument: rowSums(name of dataset)</li>
+<li>example: say you have a dataset of 10 individuals and the pieces of gum they chewed over a two week period. You want to find out how many pieces total they chewed in the second week. <code>rowSums(gum[9:15])</code></li>
+<li>this will give you the total number of gum pieces each individual chewed in the second week (the first column is names, 2-8 are days 1-7, so 9-15 are days 8-14).</li>
+</ul></li>
+<li>wilcox.test() <em>may not be using this, will come back to later</em></li>
 </ul>
 </div>
 <div id="complex-maze" class="section level4">
@@ -335,8 +352,10 @@ v</code></pre>
 </div>
 <div id="graphing" class="section level3">
 <h3>Graphing</h3>
-<p>talk about basic plot in R –&gt; what can you do, how it’s useful ggplot –&gt; maybe include a detailed document at end at all the little things ggplot can do boxplots linear regression? ANOVA?</p>
-<p>show examples of each –&gt; maybe create some fake data? or use some of my mirror data?</p>
+<p>There are many graphing tools both within the basic R package and through external packages. They allow you to not only display your data with different methods, but also manipulate the aesthetics of the graph.</p>
+<p><strong>plot()</strong> is the plotting tool included in the basic R package. See basic uses for plot <a href="https://www.datamentor.io/r-programming/plot-function/"> here.</a></p>
+<p>While the plot function allows you to specify different types of plots, there are a number of plots that have thier own functions, such as histograms [hist()] and boxplots [boxplot()]. Check out the varieties and arguments needed <a href="https://www.statmethods.net/graphs/index.html"> here.</a></p>
+<p><strong>ggplot()</strong> is by far the most intense but most versitle plotting tool. To use this, you need to download and load the ggplot2 package [by library(ggplot2)]. What ggplot does is allow you to load in the basic data and then specify the type of manipulations you want to perform (do you want a bar chart or a scatterplot for example?). <a href="https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf"> Here</a> is a good cheat sheet for all that ggplot can do.</p>
 </div>
 </div>
 
