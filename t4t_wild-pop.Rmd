@@ -9,6 +9,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+## Data collection
+
 ```{r}
 library(curl)
 
@@ -16,61 +19,146 @@ raw <- curl("https://raw.githubusercontent.com/allisondavis/t4t_wild-pop/master/
 
 raw <- read.csv(raw, header = TRUE, sep = ",", stringsAsFactors = TRUE)
 
+raw <- raw[-c(15:26)]
+raw <- raw[-c(11:987),]
 head(raw)
 
 form <- raw[raw$SPP =="form",]
 form <- form[-c(15:26)]
+head(form)
 
 lat <- raw[raw$SPP =="lat",]
 lat <- lat[-c(15:26)]
+head(lat)
 
-#calculating average % spent in each section
-form_sums <- rowSums(form[5:14]) #get total possible obs #
+
+```
+
+## Analyses
+
+#### <font color="deepskyblue"> Calculating the average percent of occurances in each section</font>
+
+```{r}
+
+#get total possible obs number
+
+form_sums <- rowSums(form[5:14]) 
 form <- cbind(form, form_sums)
-
-form_pct <- lapply(form[5:14], function(x){x/form_sums}) #get avg numb spent in each section for each indiv
-form <- cbind(form, form_pct)
-form
 
 lat_sums <- rowSums(lat[5:14])
 lat <- cbind(lat, lat_sums)
 
-lat_pct <- lapply(lat[5:14], function(x) {x/lat_sums})
-lat <- cbind(lat, lat_pct)
 
-form_avg <- apply(form[16:25], 2, mean) #get avg numb spent in each section for whole spp
-form_pct <- form_avg*100                #get percentage
+#get avg numb spent in each section for each indiv
+
+form_pct.id <- lapply(form[5:14], function(x){x/form_sums}) 
+form <- cbind(form, form_pct.id)
+
+lat_pct.id <- lapply(lat[5:14], function(x) {x/lat_sums})
+lat <- cbind(lat, lat_pct.id)
+
+
+#get avg numb spent in each section for whole spp and covert to percent
+
+form_avg <- apply(form[16:25], 2, mean) 
+form_pct.spp <- form_avg*100                
 
 lat_avg <- apply(lat[16:25], 2, mean)
-lat_pct <- lat_avg*100
+lat_pct.spp <- lat_avg*100
 
-pcts <- rbind(form_pct, lat_pct)
-pcts
+
+#isolate just the percentages for each section to plot
+
+pcts.spp <- rbind(form_pct.spp, lat_pct.spp)
+pcts.spp
 
 
 #to plot avg times spent in each section per species
 x <- c(1,2,3,4,5,6,7,8,9,10)
 
-df <- data.frame(x, form_pct, lat_pct)
+df <- data.frame(x, form_pct.spp, lat_pct.spp)
 
 library(ggplot2)
 
-ggplot(df, aes(x)) + geom_line(aes(y=form_pct, color="Amazon"), size= 1.5) + geom_line(aes(y=lat_pct, color="Sailfin"), size = 1.5)  +ylab("Times in section (%)\n") + xlab("Sections") + geom_point(aes(y=form_pct, color="Amazon"),size=2, shape=21, fill="white") + geom_point(aes(y=lat_pct, color="Sailfin"), size=2, shape=21, fill="white") + scale_shape(solid=FALSE) +theme_classic() + scale_color_manual(values = c("#9C964A", "#FAD77B")) + scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + theme(legend.title=element_blank()) + theme(text = element_text(size = 16))
+ggplot(df, aes(x)) + geom_line(aes(y=form_pct.spp, color="Amazon"), size= 1.5) + geom_line(aes(y=lat_pct.spp, color="Sailfin"), size = 1.5)  +ylab("Times in section (%)\n") + xlab("Sections") + geom_point(aes(y=form_pct.spp, color="Amazon"),size=2, shape=21, fill="white") + geom_point(aes(y=lat_pct.spp, color="Sailfin"), size=2, shape=21, fill="white") + scale_shape(solid=FALSE) +theme_classic() + scale_color_manual(values = c("#9C964A", "#FAD77B")) + scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + theme(legend.title=element_blank()) + theme(text = element_text(size = 16))
+
 
 ```
 
 
-#### Mann-Whitney U-test (AKA Wilcox Rank Sum Test)
-
-[wikipedia] A nonparametric test of the null hypothesis that it is equally likely that a randomly selected value from one population will be less than or greater than a randomly selected value from a second population.
-
-This test can be used to investigate whether two independent samples were selected from populations having the same distribution. A similar nonparametric test used on dependent samples is the Wilcoxon signed-rank test.
+#### <font color ="deepskyblue"> Calculating frequency of occurances in 3 sections: safety, neutral, danger</font>
 
 ```{r}
+#sum occurances for sections 1-3(danger), 4-6(neutral), and 7-10(safety)
 
+raw.dan.num <- rowSums(raw[5:7])
+raw <- cbind(raw, raw.dan.num)
 
-wilcox.test(form_avg,lat_avg, alternative = "greater")
+raw.neu.num <- rowSums(raw[8:10])
+raw <- cbind(raw, raw.neu.num)
 
-wilcox.test(form_pct,lat_pct, alternative = "greater")
+raw.saf.num <- rowSums(raw[11:14])
+raw <- cbind(raw, raw.saf.num)
+
+#wilcox rank sum tests (aka mann whitney u tests) to see if there's a significant difference between species within each section
+raw.dan <- wilcox.test(raw.dan.num~raw$SPP)
+raw.dan
+
+raw.neu <- wilcox.test(raw.neu.num~raw$SPP)
+raw.neu
+
+raw.saf <- wilcox.test(raw.saf.num~raw$SPP)
+raw.saf
+
 
 ```
+
+* <font color = "darkorchid4"> There does not appear to be a significant difference in the occurances within three sections (danger, neutral, safety) between the two species.</font>
+    + not sure if this was the correct way to calculate, since the occurances are not independent -if you are in the neutral, you had to pass through the safety section to get there. 
+    + this does not address variation between the two species. 
+  
+#### <font color = "deepskyblue"> Addressing variation</font>
+
+The wilcox rank sum/mann whitney u does not address if variation is different amongst species. ***Not sure if this is appropriate,*** but I will sum the occurances in the 3 sections, similar to above, but within each specific species, then compare the variance of these sums using an F-test.
+
+```{r}
+lat.dan <- rowSums(lat[5:7])
+
+lat.neu <- rowSums(lat[8:10])
+
+lat.saf <- rowSums(lat[11:14])
+
+
+form.dan <- rowSums(form[5:7])
+
+form.neu <- rowSums(form[8:10])
+
+form.saf<- rowSums(form[11:14])
+
+
+
+var.dan <- var.test(lat.dan, form.dan, alternative = "two.sided")
+var.dan
+
+var.neu <- var.test(lat.neu, form.neu, alternative = "two.sided")
+var.neu
+
+var.saf <- var.test(lat.saf, form.saf, alternative = "two.sided")
+var.saf
+
+
+```
+
+
+* <font color = "darkorchid4"> There does not appear to be a significant difference in occurance variation within three sections (danger, neutral, safety) between the two species.</font>
+
+
+
+
+
+
+
+
+
+
+
