@@ -18,12 +18,14 @@ In this intro, you'll learn the basic coding skills needed to run analyses on ou
 In R studio, your screen will be separated into 4 windows. 
   
 The top right window will display 4 different tabs: environment, history, connections, and Git.
+
   * environment: will show you all of the current values and functions that you've created and run.
   * history: will show you all of the code actually run since you've opened R up.
   * connections: never really use, can ignore
   * git: shows you which files have been saved, and allows you to connect to your internet repository.
 
 The bottom right window will display 5 tabs: files, plots, packages, help, viewer.
+
   * files: will show you all the files included in your R project folder.
   * plots: will diplay any plots run using the basic plot functions in R.
   * packages: will show you all the packages you've downloaded.
@@ -31,12 +33,14 @@ The bottom right window will display 5 tabs: files, plots, packages, help, viewe
   * viewer: not really sure what this is to be honest...
   
 The top left window is your script. Here you can type away, both functions/things you want to run as well as the annotation for each step (your descriptions on what/why you're doing a bit of code).
+
   * each line is associated with a number, which can help when errors say "line 49 blah blah blah"
   * if you have more than one R script open, or other document types (i.e. Rmd), these will show up as additional tabs on the top of this section
   * you can run your code by placing the cursor at the beginning or end of the line of code and hitting CTRL R
       - this is specifically a windows thing (lab laptops are windows), not sure the shortcut for Macs
       
-The bottom left of your screen is your console. This is where the results of your R code will pop up. You can also directly type code into the console following the > , but this code will not be saved once you exit R -only the code saved in your R script/ R markdowns (Rmd) will be accessable. 
+The bottom left of your screen is your console. This is where the results of your R code will pop up. You can also directly type code into the console following the > , but this code will not be saved once you exit R -only the code saved in your R script/ R markdowns (Rmd) will be accessable.
+
   * there is also a terminal tab in this window. This is only useful to us when we're connecting our files to Git (online repositories), which we'll talk more about later.
 
 
