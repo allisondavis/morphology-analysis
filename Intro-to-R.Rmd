@@ -83,7 +83,7 @@ v
 
 ```
 
-  * side note: the concatenate function [c()] allows you to combine objects (numbers, words, combos) into a single vector. If you tried to assign just the numbers 1,3,5,7 to v, R will throw an error because it does not understand that this is one group, it only sees numbers with no instructions on what to do with them. By adding c(1,3,5,7), you're telling R that you want to concatenate (or link) together these numbers, and assing that grouping or vector of numbers to the letter v.
+  * side note: the concatenate function [c()] allows you to combine objects (numbers, words, combos) into a single vector. If you tried to assign just the numbers 1,3,5,7 to v, R will throw an error because it does not understand that this is one group, it only sees numbers with no instructions on what to do with them. By adding c(1,3,5,7), you're telling R that you want to concatenate (or link together) these numbers, and assing that grouping or vector of numbers to the letter v.
   
   
 
@@ -194,6 +194,60 @@ Here I'll introduce some of the basic functions that we use in analyses, how to 
 Here I'll introduce some of the basic functions that we use in analyses, how to use them, and what their results tell you.
 
   * t.test()
+
+#### Scototaxis
+
+Here I'll introduce some of the basic functions that we use in analyses, how to use them, and what their results tell you.
+
+* function(x) {}
+    + this is the broades type, as it allows you to create whatever function you want (particularly ones not included in basic R)
+    + when creating a function, it does not matter what letters you use in the parentheses or brackets, but you must be consistent. The parentheses have the names of the variables (ex. x, y, z) and the brackets have the actual function being performed (ex. {x/2 * 100})
+    + always name your function! It's useless if you can't call it back with a name.
+    + example: saw we have temperature data for cities around Texas all in fahrenheit, and would like to present it in celcius
+  `fahrenheit_to_celsius <- function(temp_F) {`
+  `temp_C <- (temp_F - 32) * 5 / 9`
+  `return(temp_C)`
+`}`
+        - can also be written more generally as:
+  `fahrenheit_to_celsius <- function(x) {(x-32)* (5/9)}`
+
+  * apply()
+    + this allows you to apply a function to a broad amount of data all at once
+    + it takes three arguments: apply(dataframe, 1OR2, function)
+        - dataframe: the name of your dataframe
+        - 1OR2: 1 applies the function by row; 2 applies the function by column
+        - funtion: any function in basic package or that you specify (such as sum or mean)
+    + example: say we have a dataframe of 30 people (rando) and 3 columns for age, weight and height.
+    `apply(rando, 2, mean)`
+        - this will give the average of all the ages, all the weights, and all the heights for our whole set.
+      
+  * lapply()
+    + this is very similar to apply, but is specific for lists (will take lists and give lists). This is useful when we want to select certain columns from our dataframe.
+    + it takes two arguments: lapply(list, function)
+      - list: this can be a simple list that we've created or a selection of columns from our original dataframe (dataframe[2:3])
+      - function: any function in basic package or one you specify
+    + example: say (for whatever reason) weight and height were entered as percentages and we wanted to get the original value, we can create our own function for this.
+    `lapply(rando[2:3], funtion(x) {x/100})`
+      - this will divide the values for columns two and three (so weight and height) by 100.
+      
+  * cbind() OR rbind()
+    + this stands for column bind or row bind. It allows you to add the results of a funtion or command to the end of your current dataset. 
+    + it takes two arguments: cbind(original dataset name, new column name) OR rbind(original dataset name, new row name)
+    + make sure you have the same number of rows or columns as the original dataset, it will report an error or place values in the incorrect spot if now!
+    + example: say you wanted to add the results from you lapply function to your dataset as new columns
+    `new <- lapply(rando[2:3], function(x) {x/100})`
+    `rando <- cbind(rando, new_values)`
+      - side note: since it is more than one column, it may not rename them using new_values. Instead it will repeat the original column names.
+      
+  * wilcox.test()
+    + Wilcox rank sum tests, otherwise known as Mann Whitney U tests, is a nonparametric test (meaning the data are not normally distributed) comparing the *medians* of two separate groups. The comparison is made between a nominal characteristic (name of a group for example) and a measured characterics (body length for example). We do this comparison by assigning ranks to all the measured values in our dataset, so a 1 assigned to the lowest value, 2 to the next lowest etc, then sum up the ranks occuring in each of our groups to see how the summed ranks compare. If there is no difference between our groups, then their rank sums will be equal; if the rank sums are not equal, we can further test if they are *significantly* different. 
+    + Good video describing Wilcox rank sum/Mann Whitney U: https://www.youtube.com/watch?v=fEobVCV2TJE
+    + Good video differentiating common nonparametric tests (including Wilcox rank sum): https://www.youtube.com/watch?v=IcLSKko2tsg
+    + it takes multiple arguments, but we'll work with four for now: wilcox.test(formula, data, alternative = c("direction"), mu)
+        + formula: written as y~x, with y being the measured trait and x being the groups
+        + data: name of the dataframe x and y come from 
+        + alternative = c("direction"): specifying your predictions; direction can be "two.sided", "greater", or "less"
+        + mu: mu is the value expected if both groups are equal (defaults to zero if not specified)
 
 
 
