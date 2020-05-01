@@ -234,12 +234,17 @@ $(document).ready(function () {
 </div>
 <div id="how-to-code" class="section level3">
 <h3>How to code</h3>
-<p>For some basics on R language try the link here: <a href="https://difiore.github.io/applied-data-analysis-s2019/module-04/module-04.html" class="uri">https://difiore.github.io/applied-data-analysis-s2019/module-04/module-04.html</a></p>
+<p>For how to install R and Rstudio, some basics on R language, and how to install pacakges try the link here: <a href="http://www.sthda.com/english/wiki/r-basics-quick-and-easy" class="uri">http://www.sthda.com/english/wiki/r-basics-quick-and-easy</a></p>
 <ul>
 <li>this will provide some practice on the basics as well, so try the challenges!</li>
+<li>another good place to review the basics: <a href="https://www.guru99.com/r-tutorial.html" class="uri">https://www.guru99.com/r-tutorial.html</a></li>
 </ul>
-<p>If you google and the result requires a new package, you can install a package using info in this link here: <a href="https://difiore.github.io/applied-data-analysis-s2019/module-03/module-03.html" class="uri">https://difiore.github.io/applied-data-analysis-s2019/module-03/module-03.html</a></p>
-<p>This is link for git version control <a href="https://difiore.github.io/applied-data-analysis-s2019/module-05/module-05.html" class="uri">https://difiore.github.io/applied-data-analysis-s2019/module-05/module-05.html</a></p>
+<p>Version control is important–it allows us to work on our projects on one computer, save a copy on an internet server and contine working on our project from another computer. This makes sure that if anything happens to your computer your work isn’t lost! It also allows you to share your progress without having to push around files via email. You will use github and git for version control. Link 1 will lead you to github to create and account; links 2 and 3 are instructions on how to download git, and connect your Rstudio to your github.</p>
+<ol style="list-style-type: decimal">
+<li><p><a href="https://github.com/" class="uri">https://github.com/</a></p></li>
+<li><p><a href="https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN" class="uri">https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN</a></p></li>
+<li><p><a href="https://happygitwithr.com/rstudio-git-github.html" class="uri">https://happygitwithr.com/rstudio-git-github.html</a></p></li>
+</ol>
 <p>When you are performing analyses that you want to share it’s best to use R markdown documents. These documents allow you to present your code to people who don’t have R downloaded on their computer. Instead, your code can be shared as an html, pdf, powerpoint etc. <strong><em>For this lab,</em></strong> use R markdowns (Rmd) to perform and document your analyses. For details on Rmd formating click <a href="https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf"> here.</a></p>
 <p><strong>To review:</strong></p>
 <p>It is easier to manipulate objects in R when they’re assigned to a particular name.</p>
@@ -263,7 +268,7 @@ v</code></pre>
 <pre class="r"><code>(farm &lt;- c(&quot;cow&quot;, &quot;pig&quot;,&quot;chicken&quot;))</code></pre>
 <pre><code>## [1] &quot;cow&quot;     &quot;pig&quot;     &quot;chicken&quot;</code></pre>
 <ul>
-<li>side note: the concatenate function [c()] allows you to combine objects (numbers, words, combos) into a single vector. If you tried to assign just the numbers 1,3,5,7 to v, R will throw an error because it does not understand that this is one group, it only sees numbers with no instructions on what to do with them. By adding c(1,3,5,7), you’re telling R that you want to concatenate (or link) together these numbers, and assing that grouping or vector of numbers to the letter v.</li>
+<li>side note: the concatenate function [c()] allows you to combine objects (numbers, words, combos) into a single vector. If you tried to assign just the numbers 1,3,5,7 to v, R will throw an error because it does not understand that this is one group, it only sees numbers with no instructions on what to do with them. By adding c(1,3,5,7), you’re telling R that you want to concatenate (or link together) these numbers, and assing that grouping or vector of numbers to the letter v.</li>
 </ul>
 </div>
 <div id="data-collection" class="section level3">
@@ -371,6 +376,70 @@ v</code></pre>
 <p>Here I’ll introduce some of the basic functions that we use in analyses, how to use them, and what their results tell you.</p>
 <ul>
 <li>t.test()</li>
+</ul>
+</div>
+<div id="scototaxis" class="section level4">
+<h4>Scototaxis</h4>
+<p>Here I’ll introduce some of the basic functions that we use in analyses, how to use them, and what their results tell you.</p>
+<ul>
+<li>function(x) {}
+<ul>
+<li>this is the broades type, as it allows you to create whatever function you want (particularly ones not included in basic R)</li>
+<li>when creating a function, it does not matter what letters you use in the parentheses or brackets, but you must be consistent. The parentheses have the names of the variables (ex. x, y, z) and the brackets have the actual function being performed (ex. {x/2 * 100})</li>
+<li>always name your function! It’s useless if you can’t call it back with a name.</li>
+<li>example: saw we have temperature data for cities around Texas all in fahrenheit, and would like to present it in celcius <code>fahrenheit_to_celsius &lt;- function(temp_F) {</code> <code>temp_C &lt;- (temp_F - 32) * 5 / 9</code> <code>return(temp_C)</code> <code>}</code>
+<ul>
+<li>can also be written more generally as: <code>fahrenheit_to_celsius &lt;- function(x) {(x-32)* (5/9)}</code></li>
+</ul></li>
+</ul></li>
+<li>apply()
+<ul>
+<li>this allows you to apply a function to a broad amount of data all at once</li>
+<li>it takes three arguments: apply(dataframe, 1OR2, function)
+<ul>
+<li>dataframe: the name of your dataframe</li>
+<li>1OR2: 1 applies the function by row; 2 applies the function by column</li>
+<li>funtion: any function in basic package or that you specify (such as sum or mean)</li>
+</ul></li>
+<li>example: say we have a dataframe of 30 people (rando) and 3 columns for age, weight and height. <code>apply(rando, 2, mean)</code>
+<ul>
+<li>this will give the average of all the ages, all the weights, and all the heights for our whole set.</li>
+</ul></li>
+</ul></li>
+<li>lapply()
+<ul>
+<li>this is very similar to apply, but is specific for lists (will take lists and give lists). This is useful when we want to select certain columns from our dataframe.</li>
+<li>it takes two arguments: lapply(list, function)</li>
+<li>list: this can be a simple list that we’ve created or a selection of columns from our original dataframe (dataframe[2:3])</li>
+<li>function: any function in basic package or one you specify</li>
+<li>example: say (for whatever reason) weight and height were entered as percentages and we wanted to get the original value, we can create our own function for this. <code>lapply(rando[2:3], funtion(x) {x/100})</code></li>
+<li>this will divide the values for columns two and three (so weight and height) by 100.</li>
+</ul></li>
+<li>cbind() OR rbind()
+<ul>
+<li>this stands for column bind or row bind. It allows you to add the results of a funtion or command to the end of your current dataset.</li>
+<li>it takes two arguments: cbind(original dataset name, new column name) OR rbind(original dataset name, new row name)</li>
+<li>make sure you have the same number of rows or columns as the original dataset, it will report an error or place values in the incorrect spot if now!</li>
+<li>example: say you wanted to add the results from you lapply function to your dataset as new columns <code>new &lt;- lapply(rando[2:3], function(x) {x/100})</code> <code>rando &lt;- cbind(rando, new_values)</code></li>
+<li>side note: since it is more than one column, it may not rename them using new_values. Instead it will repeat the original column names.</li>
+</ul></li>
+<li>wilcox.test()
+<ul>
+<li>Wilcox rank sum tests, otherwise known as Mann Whitney U tests, is a nonparametric test (meaning the data are not normally distributed) comparing the <em>medians</em> of two separate groups. The comparison is made between a nominal characteristic (name of a group for example) and a measured characterics (body length for example). We do this comparison by assigning ranks to all the measured values in our dataset, so a 1 assigned to the lowest value, 2 to the next lowest etc, then sum up the ranks occuring in each of our groups to see how the summed ranks compare. If there is no difference between our groups, then their rank sums will be equal; if the rank sums are not equal, we can further test if they are <em>significantly</em> different.</li>
+<li>Good video describing Wilcox rank sum/Mann Whitney U: <a href="https://www.youtube.com/watch?v=fEobVCV2TJE" class="uri">https://www.youtube.com/watch?v=fEobVCV2TJE</a></li>
+<li>Good video differentiating common nonparametric tests (including Wilcox rank sum): <a href="https://www.youtube.com/watch?v=IcLSKko2tsg" class="uri">https://www.youtube.com/watch?v=IcLSKko2tsg</a></li>
+<li>it takes multiple arguments, but we’ll work with four for now: wilcox.test(formula, data, alternative = c(“direction”), mu)
+<ul>
+<li>formula: written as y~x, with y being the measured trait and x being the groups</li>
+<li>data: name of the dataframe x and y come from</li>
+<li>alternative = c(“direction”): specifying your predictions; direction can be “two.sided”, “greater”, or “less”</li>
+<li>mu: mu is the value expected if both groups are equal (defaults to zero if not specified)</li>
+</ul></li>
+<li>example: say you have discovered a new grasshopper and measured its body length. You want to see if this body length differs from another population of grasshoppers to properly call it a new species. Upon initial analyses we know the body lengths not normally distributed. We want to know if the body length of the new grasshopper is significantly different from the normal grasshopper, who has an average body length of 3.4cm. <code>new_species &lt;- wilcox.test(bodyLength~species, data=grasshopper, alternative=c(&quot;two.sided&quot;), mu=3.4)</code>
+<ul>
+<li>here, we are asking if bodyLength is affected by species, using our grasshopper data. Alternative is two.sided because the new grasshopper body length could technically be larger or smaller than the normal grasshopper length. Mu is 3.4, because if there is no difference between the groups, then the average body length of the new grasshopper species will equal the average body length of the old grasshopper species.</li>
+</ul></li>
+</ul></li>
 </ul>
 </div>
 </div>
