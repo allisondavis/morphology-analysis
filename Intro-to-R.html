@@ -269,7 +269,15 @@ v</code></pre>
 <pre><code>## [1] &quot;cow&quot;     &quot;pig&quot;     &quot;chicken&quot;</code></pre>
 <ul>
 <li>side note: the concatenate function [c()] allows you to combine objects (numbers, words, combos) into a single vector. If you tried to assign just the numbers 1,3,5,7 to v, R will throw an error because it does not understand that this is one group, it only sees numbers with no instructions on what to do with them. By adding c(1,3,5,7), you’re telling R that you want to concatenate (or link together) these numbers, and assing that grouping or vector of numbers to the letter v.</li>
+<li>If you want to replace an object with new data but the same name, just use the same name when assigning new information.</li>
 </ul>
+<pre class="r"><code>p &lt;- (3*2*1)
+p</code></pre>
+<pre><code>## [1] 6</code></pre>
+<pre class="r"><code>p &lt;- (4*3*2*1)
+p</code></pre>
+<pre><code>## [1] 24</code></pre>
+<pre class="r"><code>#once you rename, the p will always be the last value!</code></pre>
 </div>
 <div id="data-collection" class="section level3">
 <h3>Data collection</h3>
@@ -375,7 +383,62 @@ v</code></pre>
 <h4>Complex Maze</h4>
 <p>Here I’ll introduce some of the basic functions that we use in analyses, how to use them, and what their results tell you.</p>
 <ul>
-<li>t.test()</li>
+<li>function(x) {}
+<ul>
+<li>this is the broades type, as it allows you to create whatever function you want (particularly ones not included in basic R)</li>
+<li>when creating a function, it does not matter what letters you use in the parentheses or brackets, but you must be consistent. The parentheses have the names of the variables (ex. x, y, z) and the brackets have the actual function being performed (ex. {x/2 * 100})</li>
+<li>always name your function! It’s useless if you can’t call it back with a name.</li>
+<li>example: saw we have temperature data for cities around Texas all in fahrenheit, and would like to present it in celcius <code>fahrenheit_to_celsius &lt;- function(temp_F) {</code> <code>temp_C &lt;- (temp_F - 32) * 5 / 9</code> <code>return(temp_C)</code> <code>}</code>
+<ul>
+<li>can also be written more generally as: <code>fahrenheit_to_celsius &lt;- function(x) {(x-32)* (5/9)}</code></li>
+</ul></li>
+</ul></li>
+<li>lapply()
+<ul>
+<li>this is very similar to apply, but is specific for lists (will take lists and give lists). This is useful when we want to select certain columns from our dataframe.</li>
+<li>it takes two arguments: lapply(list, function)</li>
+<li>list: this can be a simple list that we’ve created or a selection of columns from our original dataframe (dataframe[2:3])</li>
+<li>function: any function in basic package or one you specify</li>
+<li>example: say (for whatever reason) weight and height were entered as percentages and we wanted to get the original value, we can create our own function for this. <code>lapply(rando[2:3], funtion(x) {x/100})</code></li>
+<li>this will divide the values for columns two and three (so weight and height) by 100.</li>
+</ul></li>
+<li>cbind() OR rbind()
+<ul>
+<li>this stands for column bind or row bind. It allows you to add the results of a funtion or command to the end of your current dataset.</li>
+<li>it takes two arguments: cbind(original dataset name, new column name) OR rbind(original dataset name, new row name)</li>
+<li>make sure you have the same number of rows or columns as the original dataset, it will report an error or place values in the incorrect spot if now!</li>
+<li>example: say you wanted to add the results from you lapply function to your dataset as new columns <code>new &lt;- lapply(rando[2:3], function(x) {x/100})</code> <code>rando &lt;- cbind(rando, new_values)</code></li>
+<li>side note: since it is more than one column, it may not rename them using new_values. Instead it will repeat the original column names.</li>
+</ul></li>
+<li>t.test()
+<ul>
+<li>a t-test is used to compare the means of two groups.</li>
+<li>it takes a number of arguments, but the main ones are: t.test(data<span class="math inline">\(y1, data\)</span>y2, alternative = “two.sided” OR “greater” OR “less”)</li>
+<li>example: say you want to compare the height of men and women in the US <code>t.test(rando$hei_men, rando$hei_wom, alternative = &quot;two.sided&quot;)</code></li>
+<li>we chose two.sided when the data can technically go in either direction; one sided test (greater or less) are used when it’s not possible for the data to go in one direction in our comparison.</li>
+</ul></li>
+<li>var.test()
+<ul>
+<li>the varience or F-test will compare the variation of two groups.</li>
+<li>it takes a number of arguments, but like the t-test, we’ll use: var.test(data<span class="math inline">\(y1, data\)</span>y2, alternative = “two.sided” OR “greater” OR “less”)</li>
+<li>example: now we want to look at the variation of men and women’s height <code>var.test(rando$hei_men, rando$hei_wom, alternative = &quot;two.sided&quot;)</code></li>
+</ul></li>
+<li>order()
+<ul>
+<li>this will ensure categorical data, such as trials, is seen as ordered or related in R. <code>rando$trials &lt;- ordered(rando$trials)</code></li>
+</ul></li>
+<li>lmer()
+<ul>
+<li>this function is used for mixed linear effects models on datasets that follow a normal distribution.</li>
+<li>it takes three main arguments, the model, the random effect, and data: lmer(y~x1*x2 + (1|randomeffect), data=rando)</li>
+<li>example: we want to see how oat growth of three different oat species is affected by nitrogen concentrations across different plots <code>lmer(growth~species*nitro + (1|plot), data=plants)</code></li>
+</ul></li>
+<li>glmer()
+<ul>
+<li>this function is similar to linear mixed effect model, except for datasets that don’t follow a normal distribution.</li>
+<li>it takes the same arguments as lmer but with the addition of: family =“”</li>
+<li>for our datasets, we’ll usually specify family=“poisson” since the poisson distribution can take into account our small sample sizes.</li>
+</ul></li>
 </ul>
 </div>
 <div id="scototaxis" class="section level4">
@@ -423,6 +486,13 @@ v</code></pre>
 <li>example: say you wanted to add the results from you lapply function to your dataset as new columns <code>new &lt;- lapply(rando[2:3], function(x) {x/100})</code> <code>rando &lt;- cbind(rando, new_values)</code></li>
 <li>side note: since it is more than one column, it may not rename them using new_values. Instead it will repeat the original column names.</li>
 </ul></li>
+<li>rowSums()
+<ul>
+<li>this allows you to sum all the values within a row throughout a dataset</li>
+<li>it takes one argument: rowSums(name of dataset)</li>
+<li>example: say you have a dataset of 10 individuals and the pieces of gum they chewed over a two week period. You want to find out how many pieces total they chewed in the second week. <code>rowSums(gum[9:15])</code></li>
+<li>this will give you the total number of gum pieces each individual chewed in the second week (the first column is names, 2-8 are days 1-7, so 9-15 are days 8-14).</li>
+</ul></li>
 <li>wilcox.test()
 <ul>
 <li>Wilcox rank sum tests, otherwise known as Mann Whitney U tests, is a nonparametric test (meaning the data are not normally distributed) comparing the <em>medians</em> of two separate groups. The comparison is made between a nominal characteristic (name of a group for example) and a measured characterics (body length for example). We do this comparison by assigning ranks to all the measured values in our dataset, so a 1 assigned to the lowest value, 2 to the next lowest etc, then sum up the ranks occuring in each of our groups to see how the summed ranks compare. If there is no difference between our groups, then their rank sums will be equal; if the rank sums are not equal, we can further test if they are <em>significantly</em> different.</li>
@@ -435,9 +505,9 @@ v</code></pre>
 <li>alternative = c(“direction”): specifying your predictions; direction can be “two.sided”, “greater”, or “less”</li>
 <li>mu: mu is the value expected if both groups are equal (defaults to zero if not specified)</li>
 </ul></li>
-<li>example: say you have discovered a new grasshopper and measured its body length. You want to see if this body length differs from another population of grasshoppers to properly call it a new species. Upon initial analyses we know the body lengths not normally distributed. We want to know if the body length of the new grasshopper is significantly different from the normal grasshopper, who has an average body length of 3.4cm. <code>new_species &lt;- wilcox.test(bodyLength~species, data=grasshopper, alternative=c(&quot;two.sided&quot;), mu=3.4)</code>
+<li>example: say you have discovered a new grasshopper and measured its body length. You want to see if this body length differs from another population of grasshoppers to properly call it a new species. Upon initial analyses we know the body lengths not normally distributed. We want to know if the body length of the new grasshopper is significantly different from the normal grasshopper, who has an average body length of 3.4cm. <code>new_species &lt;- wilcox.test(bodyLength~species, data=grasshopper, alternative=c(&quot;two.sided&quot;), mu=0)</code>
 <ul>
-<li>here, we are asking if bodyLength is affected by species, using our grasshopper data. Alternative is two.sided because the new grasshopper body length could technically be larger or smaller than the normal grasshopper length. Mu is 3.4, because if there is no difference between the groups, then the average body length of the new grasshopper species will equal the average body length of the old grasshopper species.</li>
+<li>here, we are asking if bodyLength is affected by species, using our grasshopper data. Alternative is two.sided because the new grasshopper body length could technically be larger or smaller than the normal grasshopper length. Mu is 0, because we’re testing the null hypothesis that the distributions of both groups are the same (so distribution x1 - distribution x2 =0).</li>
 </ul></li>
 </ul></li>
 </ul>
