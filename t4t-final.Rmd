@@ -1,7 +1,7 @@
 ---
-title: "t4t_wild-pop"
-author: "Allison Davis"
-date: "November 21, 2019"
+title: "t4t-final"
+author: "Allison Davis Connelly"
+date: "4/4/2022"
 output: html_document
 ---
 
@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-## Data collection
+## Data collection 
 
 ```{r}
 library(curl)
@@ -34,9 +34,9 @@ head(lat)
 
 ```
 
-## Analyses
+## Analyses {.tabset .tabset-fade .tabset-pills}
 
-#### <font color="deepskyblue"> Calculating the average percent of occurances in each section</font>
+### Calculating the average percent of occurances in each section
 
 ```{r}
 
@@ -86,7 +86,10 @@ ggplot(df, aes(x)) + geom_line(aes(y=form_pct.spp, color="Amazon"), size= 1.5) +
 ```
 
 
-#### <font color ="deepskyblue"> Calculating frequency of occurances in 3 sections: safety, neutral, danger</font>
+### Calculating frequency of occurances in 3 sections: safety, neutral, danger
+  
+   - would I have to sum the proportions instead? Since they don't all have the same total number of observations?
+
 
 ```{r}
 #sum occurances for sections 1-3(danger), 4-6(neutral), and 7-10(safety)
@@ -115,50 +118,46 @@ raw.saf
 
 * <font color = "darkorchid4"> There does not appear to be a significant difference in the occurrences within three sections (danger, neutral, safety) between the two species.</font>
     + not sure if this was the correct way to calculate, since the occurrences are not independent -if you are in the neutral, you had to pass through the safety section to get there. 
-    + this does not address variation between the two species. 
-  
-#### <font color = "deepskyblue"> Addressing variation</font>
 
-The wilcox rank sum/mann whitney u does not address if variation is different amongst species. ***Not sure if this is appropriate,*** but I will sum the occurances in the 3 sections, similar to above, but within each specific species, then compare the variance of these sums using an F-test.
+<br><br><br>
+* Going to repeat this analysis but with the proportions instead
+
 
 ```{r}
-lat.dan <- rowSums(lat[5:7])
 
-lat.neu <- rowSums(lat[8:10])
+#get percents for each section based on total observation number
 
-lat.saf <- rowSums(lat[11:14])
+sums <- rowSums(raw[5:14]) 
+raw <- cbind(raw, sums)
 
-
-form.dan <- rowSums(form[5:7])
-
-form.neu <- rowSums(form[8:10])
-
-form.saf<- rowSums(form[11:14])
+pct <- lapply(raw[5:14], function(x){x/sums}) 
+raw <- cbind(raw, pct)
 
 
+#sum occurances for sections 1-3(danger), 4-6(neutral), and 7-10(safety)
 
-var.dan <- var.test(lat.dan, form.dan, alternative = "two.sided")
-var.dan
+raw.dan.num <- rowSums(raw[16:18])
+raw <- cbind(raw, raw.dan.num)
 
-var.neu <- var.test(lat.neu, form.neu, alternative = "two.sided")
-var.neu
+raw.neu.num <- rowSums(raw[19:21])
+raw <- cbind(raw, raw.neu.num)
 
-var.saf <- var.test(lat.saf, form.saf, alternative = "two.sided")
-var.saf
+raw.saf.num <- rowSums(raw[22:25])
+raw <- cbind(raw, raw.saf.num)
+
+#wilcox rank sum tests (aka mann whitney u tests) to see if there's a significant difference between species within each section
+raw.dan <- wilcox.test(raw.dan.num~raw$SPP)
+raw.dan
+
+raw.neu <- wilcox.test(raw.neu.num~raw$SPP)
+raw.neu
+
+raw.saf <- wilcox.test(raw.saf.num~raw$SPP)
+raw.saf
+
 
 
 ```
 
 
-* <font color = "darkorchid4"> There does not appear to be a significant difference in occurance variation within three sections (danger, neutral, safety) between the two species.</font>
-
-
-
-
-
-
-
-
-
-
-
+Seems to at least not throw an error as compared to the regular scores. Still no significant difference. 
