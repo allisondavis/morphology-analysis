@@ -1,0 +1,181 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Sections data {.tabset .tabset-fade .tabset-pills}
+
+## Data collection {.tabset .tabset-fade .tabset-pills}
+
+```{r}
+library(curl)
+
+raw <- curl("https://raw.githubusercontent.com/allisondavis/t4t_wild-pop/master/t4t_2019-data.csv")
+
+raw <- read.csv(raw, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
+raw <- raw[-c(16:26)]
+raw <- raw[-c(31:999),]
+raw <- na.omit(raw)
+head(raw)
+
+form <- raw[raw$SPP =="form",]
+head(form)
+
+lat <- raw[raw$SPP =="lat",]
+head(lat)
+
+
+```
+
+## Analyses {.tabset .tabset-fade .tabset-pills}
+
+### Calculating the average percent of occurances in each section
+
+```{r}
+
+#get total possible obs number
+
+form_sums <- rowSums(form[6:15]) 
+form <- cbind(form, form_sums)
+
+lat_sums <- rowSums(lat[6:15])
+lat <- cbind(lat, lat_sums)
+
+
+#get avg numb spent in each section for each indiv
+
+form_pct.id <- lapply(form[6:15], function(x){x/form_sums}) 
+form <- cbind(form, form_pct.id)
+
+lat_pct.id <- lapply(lat[6:15], function(x) {x/lat_sums})
+lat <- cbind(lat, lat_pct.id)
+
+#get avg numb spent in each section for whole spp and covert to percent
+
+form_avg <- apply(form[17:26], 2, mean) 
+form_pct.spp <- form_avg*100                
+
+lat_avg <- apply(lat[17:26], 2, mean)
+lat_pct.spp <- lat_avg*100
+
+
+#isolate just the percentages for each section to plot
+
+pcts.spp <- rbind(form_pct.spp, lat_pct.spp)
+pcts.spp
+
+
+#to plot avg times spent in each section per species
+x <- c(1,2,3,4,5,6,7,8,9,10)
+
+df <- data.frame(x, form_pct.spp, lat_pct.spp)
+
+library(ggplot2)
+
+ggplot(df, aes(x)) + geom_line(aes(y=form_pct.spp, color="Amazon"), size= 1.5) + geom_line(aes(y=lat_pct.spp, color="Sailfin"), size = 1.5)  +ylab("Occurances in section (%)\n") + xlab("Sections") + geom_point(aes(y=form_pct.spp, color="Amazon"),size=2, shape=21, fill="white") + geom_point(aes(y=lat_pct.spp, color="Sailfin"), size=2, shape=21, fill="white") + scale_shape(solid=FALSE) +theme_classic() + scale_color_manual(values = c("#EBCC2A", "#78B7C5")) + scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + theme(legend.title=element_blank()) + theme(text = element_text(size = 16))
+
+
+```
+
+
+### Calculating frequency of occurances in 3 sections: safety, neutral, danger
+  
+   - would I have to sum the proportions instead? Since they don't all have the same total number of observations?
+
+
+```{r}
+#sum occurances for sections 1-3(danger), 4-6(neutral), and 7-10(safety)
+
+raw.dan.num <- rowSums(raw[6:8])
+raw <- cbind(raw, raw.dan.num)
+
+raw.neu.num <- rowSums(raw[9:11])
+raw <- cbind(raw, raw.neu.num)
+
+raw.saf.num <- rowSums(raw[12:15])
+raw <- cbind(raw, raw.saf.num)
+
+#wilcox rank sum tests (aka mann whitney u tests) to see if there's a significant difference between species within each section
+raw.dan <- wilcox.test(raw.dan.num~raw$SPP)
+raw.dan
+
+raw.neu <- wilcox.test(raw.neu.num~raw$SPP)
+raw.neu
+
+raw.saf <- wilcox.test(raw.saf.num~raw$SPP)
+raw.saf
+
+
+```
+
+* <font color = "darkorchid4"> There does not appear to be a significant difference in the occurrences within three sections (danger, neutral, safety) between the two species.</font>
+    + not sure if this was the correct way to calculate, since the occurrences are not independent -if you are in the neutral, you had to pass through the safety section to get there. 
+
+<br><br><br>
+* Going to repeat this analysis but with the proportions instead
+
+
+```{r}
+
+#get percents for each section based on total observation number
+
+sums <- rowSums(raw[6:15]) 
+raw <- cbind(raw, sums)
+
+#pct <- lapply(raw[5:14], function(x){x/sums}) 
+#raw <- cbind(raw, pct)
+
+
+
+
+#sum occurances for sections 1-3(danger), 4-6(neutral), and 7-10(safety)
+
+dan.num <- rowSums(raw[6:8])
+raw <- cbind(raw, dan.num)
+
+neu.num <- rowSums(raw[9:11])
+raw <- cbind(raw, neu.num)
+
+saf.num <- rowSums(raw[12:13])
+raw <- cbind(raw, saf.num)
+
+#get proportion for each section
+
+prop <- lapply(raw[17:19], function(x){x/sums}) 
+raw <- cbind(raw, prop)
+
+names(raw)[20] <- "prop.dan"
+names(raw)[21] <- "prop.neu"
+names(raw)[22] <- "prop.saf"
+
+#wilcox rank sum tests (aka mann whitney u tests) to see if there's a significant difference between species within each section
+danger <- wilcox.test(raw$prop.dan~raw$SPP)
+danger
+
+neutral <- wilcox.test(raw$prop.neu~raw$SPP)
+neutral
+
+safe <- wilcox.test(raw$prop.saf~raw$SPP)
+safe
+
+
+
+```
+
+
+Seems to at least not throw an error as compared to the regular scores. Still no significant difference. 
+
+
+
+
+
+
+```{r}
+
+t.test(lat$TIME.1, form$TIME.1, alternative = "two.sided")
+
+
+var.test(lat$TIME.1, form$TIME.1, alternative = "two.sided")
+
+```

@@ -9,178 +9,283 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Predator Inspection {.tabset .tabset-fade .tabset-pills}
 
-## Data collection 
+# Boldness data {.tabset .tabset-fade .tabset-pills}
+
+## Data collection {.tabset .tabset-fade .tabset-pills}
 
 ```{r}
 library(curl)
 
-raw <- curl("https://raw.githubusercontent.com/allisondavis/t4t_wild-pop/master/t4t_2019-data.csv")
+raw.bld <- curl("https://raw.githubusercontent.com/allisondavis/t4t_wild-pop/master/bold-raw.csv")
 
-raw <- read.csv(raw, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+raw.bld <- read.csv(raw.bld, header = TRUE, sep = ",", stringsAsFactors = TRUE)
 
-raw <- raw[-c(16:27)]
-raw <- raw[-c(31:999),]
-raw <- na.omit(raw)
-head(raw)
+head(raw.bld)
 
-form <- raw[raw$SPP =="form",]
-head(form)
+raw.bld$avg <- rowMeans(raw.bld[, c(3,4)], na.rm = TRUE)
 
-lat <- raw[raw$SPP =="lat",]
-head(lat)
+form.bld <- raw.bld[raw.bld$SPP =="form",]
+head(form.bld)
+
+lat.bld <- raw.bld[raw.bld$SPP =="lat",]
+head(lat.bld)
+
+raw.bld.lin <- curl("https://raw.githubusercontent.com/allisondavis/t4t_wild-pop/master/bold-linear-format.csv")
+
+raw.bld.lin <- read.csv(raw.bld.lin, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
+form.bld.lin <- raw.bld.lin[raw.bld.lin$SPP =="form",]
+
+
+lat.bld.lin <- raw.bld.lin[raw.bld.lin$SPP =="lat",]
+
 
 
 ```
 
-## Analyses {.tabset .tabset-fade .tabset-pills}
+*First look*
 
-### Calculating the average percent of occurances in each section
+```{r}
+library(rstatix)
+
+get_summary_stats(form.bld, show = c("mean", "sd", "median", "iqr"))
+
+get_summary_stats(lat.bld, show = c("mean", "sd", "median", "iqr"))
+
+par(mfrow=c(1,2))
+
+boxplot(data=raw.bld, BLD1 ~ SPP, ylab = "Exit time (s)", main= "Boldness: Round 1")
+
+boxplot(data=raw.bld, BLD2 ~ SPP, ylab = "Exit time (s)", main= "Boldness: Round 2")
+
+
+```
+
+
+## Repeatability {.tabset .tabset-fade .tabset-pills}
+
+Here I will see how repeatable their behavior was from round 1 to round 2
+
+```{r}
+library(ggpubr)
+
+cor.test(form.bld$BLD1, form.bld$BLD2, alternative = "two.sided", method = "spearman", use = "complete.obs")
+
+cor.test(lat.bld$BLD1, lat.bld$BLD2, alternative = "two.sided", method = "spearman", use = "complete.obs")
+
+form.cor <- ggscatter(form.bld, x = "BLD1", y = "BLD2", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "spearman", xlab = "Round 1", ylab = "Round 2", main = "Amazon molly")
+
+lat.cor <- ggscatter(lat.bld, x = "BLD1", y = "BLD2", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "spearman", xlab = "Round 1", ylab = "Round 2", main = "Sailfin molly")
+
+
+par(mfrow=c(1,2))
+form.cor
+lat.cor
+
+
+```
+
+***Amazons seem to lack repeatability (p=0.74), but sailfin have significant repeatability (p=0.0025). Not sure how to interpret this.***
+
+
+Let's see if this matches with the t-test. Both are not significant-- ***this means that while they were not repeatable, the difference between the rounds was not significantly different. The averages aren't different between rounds, but the overall distribution is different for amazons (see boxplot from data collection)***
 
 ```{r}
 
-#get total possible obs number
+t.test(form.bld$BLD1, form.bld$BLD2, paired = TRUE, alternative = "two.sided")
 
-form_sums <- rowSums(form[6:15]) 
-form <- cbind(form, form_sums)
+t.test(lat.bld$BLD1, lat.bld$BLD2, paired = TRUE, alternative = "two.sided")
 
-lat_sums <- rowSums(lat[6:15])
-lat <- cbind(lat, lat_sums)
+```
 
 
-#get avg numb spent in each section for each indiv
-
-form_pct.id <- lapply(form[6:15], function(x){x/form_sums}) 
-form <- cbind(form, form_pct.id)
-
-lat_pct.id <- lapply(lat[6:15], function(x) {x/lat_sums})
-lat <- cbind(lat, lat_pct.id)
-
-#get avg numb spent in each section for whole spp and covert to percent
-
-form_avg <- apply(form[17:26], 2, mean) 
-form_pct.spp <- form_avg*100                
-
-lat_avg <- apply(lat[17:26], 2, mean)
-lat_pct.spp <- lat_avg*100
 
 
-#isolate just the percentages for each section to plot
-
-pcts.spp <- rbind(form_pct.spp, lat_pct.spp)
-pcts.spp
 
 
-#to plot avg times spent in each section per species
-x <- c(1,2,3,4,5,6,7,8,9,10)
+## Species comparisons {.tabset .tabset-fade .tabset-pills}
 
-df <- data.frame(x, form_pct.spp, lat_pct.spp)
+Here I will see if Amazons and sailfin differ in their boldness in round 1 and round 2. I will perform both rounds separately, but then calculate an average duration and compare. 
 
+
+```{r}
+
+t.test(form.bld$BLD1, lat.bld$BLD1, alternative = "two.sided") #sig
+
+t.test(form.bld$BLD2, lat.bld$BLD2, alternative = "two.sided") #not sig
+
+t.test(form.bld$avg, lat.bld$avg, alternative = "two.sided") #sig
+
+
+
+```
+
+***So it looks like there is a significant difference in exit time between amazons and sailfins; averages show that amazons took less time to exit than sailfins. This could influence cooperation.***
+
+
+
+
+
+
+
+
+
+# Cooperation Data {.tabset .tabset-fade .tabset-pills}
+
+## Data collection{.tabset .tabset-fade .tabset-pills} 
+
+```{r}
+library(curl)
+
+raw.coop <- curl("https://raw.githubusercontent.com/allisondavis/t4t_wild-pop/master/pred-inspection_raw.csv")
+
+raw.coop <- read.csv(raw.coop, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
+head(raw.coop)
+
+form.coop <- raw.coop[raw.coop$SPP =="form",]
+head(form.coop)
+
+lat.coop <- raw.coop[raw.coop$SPP =="lat",]
+head(lat.coop)
+
+```
+
+
+
+*First look*
+
+```{r}
+library(rstatix)
+
+get_summary_stats(form.coop, show = c("mean", "sd", "median", "iqr"))
+
+get_summary_stats(lat.coop, show = c("mean", "sd", "median", "iqr"))
+
+par(mfrow=c(1,2))
+
+boxplot(data=raw.coop, P.INSP ~ SPP, main= "Proportion of time in inspection zone")
+
+boxplot(data=raw.coop, P.COOP ~ SPP, main= "Proportion of time in cooperative inspection")
+
+boxplot(data=raw.coop, P.SOLO ~ SPP, main= "Proportion of time in solo inspection")
+
+boxplot(data=raw.coop, DEF ~ SPP, main= "Number of Defects")
+
+```
+
+
+
+
+
+## Species comparisons {.tabset .tabset-fade .tabset-pills}
+
+First, the proportion of time in the inspection zone between amazons and sailfins. 
+
+```{r}
+
+wilcox.test(form.coop$P.INSP, lat.coop$P.INSP, alternative = "two.sided") #not sig
+
+wilcox.test(form.coop$P.COOP, lat.coop$P.COOP, alternative = "two.sided") #sig
+
+wilcox.test(form.coop$P.SOLO, lat.coop$P.SOLO, alternative = "two.sided") #sig
+
+
+t.test(form.coop$DEF, lat.coop$DEF, alternative = "two.sided") #not sig
+
+
+
+
+```
+
+
+
+
+
+
+
+
+# Pretty plots {.tabset .tabset-fade .tabset-pills}
+ 
+To use for SICB talk...
+
+
+```{r}
 library(ggplot2)
+library(wesanderson)
+zis_colors <- wes_palette("Zissou1", type="discrete")
+zis_colors2 <- wes_palette("Moonrise2", type="discrete")
+zis_colors3 <- wes_palette("IsleofDogs1", type="discrete")
+#sail: #78B7C5
+#amz: #E1AF00
+#dark: #29211F
+#med:  "#8D8680"
 
-ggplot(df, aes(x)) + geom_line(aes(y=form_pct.spp, color="Amazon"), size= 1.5) + geom_line(aes(y=lat_pct.spp, color="Sailfin"), size = 1.5)  +ylab("Occurances in section (%)\n") + xlab("Sections") + geom_point(aes(y=form_pct.spp, color="Amazon"),size=2, shape=21, fill="white") + geom_point(aes(y=lat_pct.spp, color="Sailfin"), size=2, shape=21, fill="white") + scale_shape(solid=FALSE) +theme_classic() + scale_color_manual(values = c("#EBCC2A", "#78B7C5")) + scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + theme(legend.title=element_blank()) + theme(text = element_text(size = 16))
+#inspection zone
+IZ <- ggplot(raw.coop, aes(x=SPP, y=P.INSP, fill=SPP)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_violin(trim = FALSE) + stat_summary(fun.data = "mean_sdl", fun.args=list(mult=1), geom = "pointrange", color="#29211F") +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
 
-
-```
-
-
-### Calculating frequency of occurances in 3 sections: safety, neutral, danger
-  
-   - would I have to sum the proportions instead? Since they don't all have the same total number of observations?
-
-
-```{r}
-#sum occurances for sections 1-3(danger), 4-6(neutral), and 7-10(safety)
-
-raw.dan.num <- rowSums(raw[6:8])
-raw <- cbind(raw, raw.dan.num)
-
-raw.neu.num <- rowSums(raw[9:11])
-raw <- cbind(raw, raw.neu.num)
-
-raw.saf.num <- rowSums(raw[12:15])
-raw <- cbind(raw, raw.saf.num)
-
-#wilcox rank sum tests (aka mann whitney u tests) to see if there's a significant difference between species within each section
-raw.dan <- wilcox.test(raw.dan.num~raw$SPP)
-raw.dan
-
-raw.neu <- wilcox.test(raw.neu.num~raw$SPP)
-raw.neu
-
-raw.saf <- wilcox.test(raw.saf.num~raw$SPP)
-raw.saf
+IZ
 
 
-```
-
-* <font color = "darkorchid4"> There does not appear to be a significant difference in the occurrences within three sections (danger, neutral, safety) between the two species.</font>
-    + not sure if this was the correct way to calculate, since the occurrences are not independent -if you are in the neutral, you had to pass through the safety section to get there. 
-
-<br><br><br>
-* Going to repeat this analysis but with the proportions instead
+#cooperation
+CP <- ggplot(raw.coop, aes(x=SPP, y=P.COOP, fill=SPP)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_violin(trim = FALSE) + stat_summary(fun.data = "mean_sdl", fun.args=list(mult=1), geom = "pointrange", color="#29211F") +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
+CP
 
 
-```{r}
+CP1 <- ggplot(raw.coop, aes(x=SPP, y=P.COOP, fill=SPP)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_boxplot(outlier.color = "#29211F", outlier.shape = 16, outlier.size = 2, notch = FALSE) + geom_point(color= "#8D8680", size=2, alpha=0.5) +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 6)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
+CP1
 
-#get percents for each section based on total observation number
-
-sums <- rowSums(raw[6:15]) 
-raw <- cbind(raw, sums)
-
-#pct <- lapply(raw[5:14], function(x){x/sums}) 
-#raw <- cbind(raw, pct)
+#solo
+SO <- ggplot(raw.coop, aes(x=SPP, y=P.SOLO, fill=SPP)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_violin(trim = FALSE) + stat_summary(fun.data = "mean_sdl", fun.args=list(mult=1), geom = "pointrange", color="#29211F") +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
+SO
 
 
+SO1 <- ggplot(raw.coop, aes(x=SPP, y=P.SOLO, fill=SPP)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_boxplot(outlier.color = "#29211F", outlier.shape = 16, outlier.size = 2, notch = FALSE) + geom_point(color= "#8D8680", size=2, alpha=0.5) +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 6)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
+SO1
 
 
-#sum occurances for sections 1-3(danger), 4-6(neutral), and 7-10(safety)
+#boldness-R1
+BD1 <- ggplot(raw.bld, aes(x=SPP, y=BLD1, fill=SPP)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_violin(trim = TRUE) + stat_summary(fun.data = "mean_sdl", fun.args=list(mult=1), geom = "pointrange", color="#29211F") +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
+BD1
 
-dan.num <- rowSums(raw[6:8])
-raw <- cbind(raw, dan.num)
 
-neu.num <- rowSums(raw[9:11])
-raw <- cbind(raw, neu.num)
+BD1.1 <- ggplot(raw.bld, aes(x=SPP, y=BLD1, fill=SPP)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_boxplot(outlier.color = "#29211F", outlier.shape = 16, outlier.size = 2, notch = FALSE) + geom_point(color= "#8D8680", size=2, alpha=0.5) +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 6)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
+BD1.1
 
-saf.num <- rowSums(raw[12:13])
-raw <- cbind(raw, saf.num)
 
-#get proportion for each section
+#boldness-R2
+BD2 <- ggplot(raw.bld, aes(x=SPP, y=BLD2, fill=SPP)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_violin(trim = FALSE) + stat_summary(fun.data = "mean_sdl", fun.args=list(mult=1), geom = "pointrange", color="#29211F") +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
+BD2
 
-prop <- lapply(raw[17:19], function(x){x/sums}) 
-raw <- cbind(raw, prop)
 
-names(raw)[20] <- "prop.dan"
-names(raw)[21] <- "prop.neu"
-names(raw)[22] <- "prop.saf"
+BD2.1 <- ggplot(raw.bld, aes(x=SPP, y=BLD2, fill=SPP)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_boxplot(outlier.color = "#29211F", outlier.shape = 16, outlier.size = 2, notch = FALSE) + geom_point(color= "#8D8680", size=2, alpha=0.5) +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 6)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
+BD2.1
 
-#wilcox rank sum tests (aka mann whitney u tests) to see if there's a significant difference between species within each section
-danger <- wilcox.test(raw$prop.dan~raw$SPP)
-danger
 
-neutral <- wilcox.test(raw$prop.neu~raw$SPP)
-neutral
+#boldness-avg
+AV <- ggplot(raw.bld, aes(x=SPP, y=avg, fill=SPP)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_violin(trim = FALSE) + stat_summary(fun.data = "mean_sdl", fun.args=list(mult=1), geom = "pointrange", color="#29211F") +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
+AV
 
-safe <- wilcox.test(raw$prop.saf~raw$SPP)
-safe
+
+AV1 <- ggplot(raw.bld, aes(x=SPP, y=avg, fill=SPP)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_boxplot(outlier.color = "#29211F", outlier.shape = 16, outlier.size = 2, notch = FALSE) + geom_point(color= "#8D8680", size=2, alpha=0.5) +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 6)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
+AV1
+
+
+
+ggsave(IZ, filename = "Isolation.png", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
+ggsave(CP1, filename = "Cooperation.png", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
+ggsave(SO1, filename = "Solo.png", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
+ggsave(BD1.1, filename = "BoldR1.png", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
+ggsave(BD2.1, filename = "BoldR2.png", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
+ggsave(AV1, filename = "Bold.Avg.png", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
+
+
+
 
 
 
 ```
 
 
-Seems to at least not throw an error as compared to the regular scores. Still no significant difference. 
-
-
-
-
-
-
-```{r}
-
-t.test(lat$TIME.1, form$TIME.1, alternative = "two.sided")
-
-
-var.test(lat$TIME.1, form$TIME.1, alternative = "two.sided")
-
-```
