@@ -8,12 +8,55 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# Predator Inspection Experiment {.tabset .tabset-fade .tabset-pills}
 
-Predator Inspection {.tabset .tabset-fade .tabset-pills}
+## New Data {.tabset .tabset-fade .tabset-pills}
 
-# Boldness data {.tabset .tabset-fade .tabset-pills}
+This will be for the data I collect with Tristan--i.e. the tracking data.
 
-## Data collection {.tabset .tabset-fade .tabset-pills}
+The csv file I created from the current df in our jupyter notebook was waaaay too big to put anywhere. So, I took a few rows and created a testing csv to at least figure out how to do the analyses. 
+
+```{r}
+
+library(curl)
+
+raw.track <- curl("https://raw.githubusercontent.com/allisondavis/t4t_wild-pop/master/testing.csv")
+
+raw.track <- read.csv(raw.track, header = TRUE, sep = ",", stringsAsFactors = TRUE, row.names = NULL)
+
+head(raw.track)
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Old Data {.tabset .tabset-fade .tabset-pills}
+
+### Boldness data {.tabset .tabset-fade .tabset-pills}
+
+#### Data collection {.tabset .tabset-fade .tabset-pills}
 
 ```{r}
 library(curl)
@@ -64,7 +107,7 @@ boxplot(data=raw.bld, BLD2 ~ SPP, ylab = "Exit time (s)", main= "Boldness: Round
 ```
 
 
-## Repeatability {.tabset .tabset-fade .tabset-pills}
+#### Repeatability {.tabset .tabset-fade .tabset-pills}
 
 Here I will see how repeatable their behavior was from round 1 to round 2
 
@@ -105,7 +148,7 @@ t.test(lat.bld$BLD1, lat.bld$BLD2, paired = TRUE, alternative = "two.sided")
 
 
 
-## Species comparisons {.tabset .tabset-fade .tabset-pills}
+#### Species comparisons {.tabset .tabset-fade .tabset-pills}
 
 Here I will see if Amazons and sailfin differ in their boldness in round 1 and round 2. I will perform both rounds separately, but then calculate an average duration and compare. 
 
@@ -125,6 +168,58 @@ t.test(form.bld$avg, lat.bld$avg, alternative = "two.sided") #sig
 ***So it looks like there is a significant difference in exit time between amazons and sailfins; averages show that amazons took less time to exit than sailfins. This could influence cooperation.***
 
 
+### Neophobia data {.tabset .tabset-fade .tabset-pills}
+
+#### Data collection {.tabset .tabset-fade .tabset-pills}
+
+
+```{r}
+library(curl)
+
+raw.neo <- curl("https://raw.githubusercontent.com/allisondavis/t4t_wild-pop/master/old-neo.csv")
+
+raw.neo <- read.csv(raw.neo, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
+head(raw.neo)
+
+form.neo <- raw.neo[raw.neo$Spp =="form",]
+head(form.neo)
+
+lat.neo <- raw.neo[raw.neo$Spp =="lat",]
+head(lat.neo)
+
+
+```
+
+*First look*
+
+```{r}
+library(rstatix)
+
+get_summary_stats(form.neo, show = c("mean", "sd", "median", "iqr"))
+
+get_summary_stats(lat.neo, show = c("mean", "sd", "median", "iqr"))
+
+
+boxplot(data=raw.neo, Total ~ Spp, ylab = "Time to approach (s)", main="Old Object Neophobia")
+
+
+
+t.test(form.neo$Total, lat.neo$Total, paired = FALSE, alternative = "two.sided")
+var.test(form.neo$Total, lat.neo$Total, alternative = "two.sided", conf.level = 0.95) #NO DIFFERENCE IN VARIANCE p=0.374
+
+library(ggplot2)
+library(wesanderson)
+#sail: #78B7C5
+#amz: #E1AF00
+#dark: #29211F
+#med:  "#8D8680"
+
+NEO.plt <- ggplot(raw.neo, aes(x=Spp, y=Total, fill=Spp)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_boxplot(outlier.color = "#29211F", outlier.shape = 16, outlier.size = 2, notch = FALSE) + geom_point(color= "#8D8680", size=2, alpha=0.5) +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 6)) + theme(legend.title=element_blank()) + ylab("Time to approach (s)") + xlab("")
+NEO.plt
+
+
+```
 
 
 
@@ -132,9 +227,9 @@ t.test(form.bld$avg, lat.bld$avg, alternative = "two.sided") #sig
 
 
 
-# Cooperation Data {.tabset .tabset-fade .tabset-pills}
+### Cooperation Data {.tabset .tabset-fade .tabset-pills}
 
-## Data collection{.tabset .tabset-fade .tabset-pills} 
+#### Data collection{.tabset .tabset-fade .tabset-pills} 
 
 ```{r}
 library(curl)
@@ -180,7 +275,7 @@ boxplot(data=raw.coop, DEF ~ SPP, main= "Number of Defects")
 
 
 
-## Species comparisons {.tabset .tabset-fade .tabset-pills}
+#### Species comparisons {.tabset .tabset-fade .tabset-pills}
 
 First, the proportion of time in the inspection zone between amazons and sailfins. 
 
@@ -207,7 +302,7 @@ t.test(form.coop$DEF, lat.coop$DEF, alternative = "two.sided") #not sig
 
 
 
-# Pretty plots {.tabset .tabset-fade .tabset-pills}
+### Pretty plots {.tabset .tabset-fade .tabset-pills}
  
 To use for SICB talk...
 
@@ -227,6 +322,10 @@ zis_colors3 <- wes_palette("IsleofDogs1", type="discrete")
 IZ <- ggplot(raw.coop, aes(x=SPP, y=P.INSP, fill=SPP)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_violin(trim = FALSE) + stat_summary(fun.data = "mean_sdl", fun.args=list(mult=1), geom = "pointrange", color="#29211F") +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
 
 IZ
+
+IN <- ggplot(raw.coop, aes(x=SPP, y=P.INSP, fill=SPP)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_boxplot(outlier.color = "#29211F", outlier.shape = 16, outlier.size = 2, notch = FALSE) + geom_point(color= "#8D8680", size=2, alpha=0.5) +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
+
+IN
 
 
 #cooperation
@@ -274,7 +373,7 @@ AV1
 
 
 
-ggsave(IZ, filename = "Isolation.png", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
+ggsave(IN, filename = "Inspection.png", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
 ggsave(CP1, filename = "Cooperation.png", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
 ggsave(SO1, filename = "Solo.png", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
 ggsave(BD1.1, filename = "BoldR1.png", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
