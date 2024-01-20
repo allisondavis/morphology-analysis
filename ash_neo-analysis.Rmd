@@ -1,0 +1,192 @@
+---
+title: "Ash-Neophobia"
+author: "Allison Davis Connelly"
+date: "1/17/2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Neophobia & Predator Inspection Experiment {.tabset .tabset-fade .tabset-pills}
+
+*Purpose:* Our interest lies in whether these two reproductive systems that affect genetic variation in different ways produce similar phenotypes –both in terms of means and levels of variation—that assist in their continued coexistence. More specifically to test if there are differences in object neophobia between asexual (amazon molly) and sexual (sailfin molly) species. In addition, we want to compare this to cooperation between conspecific pairs in a predator inspection experiment.
+
+*Hypothesis:* Differences in asexual and sexual reproductive systems—namely the amount of genetic variation produced, or how genetic variation is partitioned—do not constrain phenotypic evolution.
+
+*Predictions:*
+  - Neophobia: Amazons and sailfins will differ in their response to novel objects. This allows the continued coexistance in the asexual-sexual system of the Amazon molly.
+  - Predator inspection: Amazons are more cooperative than sailfin due to their high relatedness. 
+  - How it relates to hypothesis: despite having less overall genetic variation, the amazons are able to evolve due to selection on clonal lineages that promote cooperation and appropriate neophobia/neophilia.
+
+# Neophobia experiment {.tabset .tabset-fade .tabset-pills}
+
+## Data {.tabset .tabset-fade .tabset-pills}
+
+We performed object neophobia--the time it takes to approach a food source in the presence of a novel object--with four different object groups: control, weird same, weird different, and predator. Each group had three trials with different objects each trial that are still within the group category (eg. plant/rock/pot, all in control). The only exception was the 'weird same' group, which exposed the fish to the same letter-based object for each trial to test habituation.
+
+For each trial, we collected the amount of time it took for the fish to approach the feeding plate and start feeding (pecking at plate). To work with the data, we first need to create a github repository, upload a csv of our data, and then pull the data down into this Rmd to analyse it. 
+
+### Creating a Github account and repository {.tabset .tabset-fade .tabset-pills}
+
+If you do not have a Github account, go to <https://github.com/> and sign up. You only need the free version, so this means our info will be public, but that is not an issue. 
+
+Once you have an account create a new repository using the instructions here: <https://sites.northwestern.edu/researchcomputing/resources/using-git-and-github-with-r-rstudio/>
+
+And link it to your Rstudio using the instructions here: 
+<https://sites.northwestern.edu/researchcomputing/2022/05/11/git-with-rstudio-order-matters/>
+
+You should be able to upload this Rmd to your repo. You'll also need to upload the CSV file of our data into the repo. Once you have this, you may need to pull (down blue arrow in top right corner under the Git tab) before being able to commit any changes.
+
+
+### Getting the data {.tabset .tabset-fade .tabset-pills}
+
+You first need to call you data from the internet in order to run stats in Rstudio. Your data should be saved as a csv file, and uploaded to your github repository (github project). On github, click on your project, click on the csv file, then hit "raw" --you will need to copy the html of the raw file to use in Rstudio.
+
+To pull your data into Rstudio, you will need to use the following functions/packages: library(), curl package, curl(), read.csv()
+
+  * If you haven't done so already, install the curl package. You can install a package in two ways:
+      1) use `install.packages()` with the name of the package in the brackets
+      
+      2) go to your packages tab in the lower right corner (Files Plots **Packages** Help Viewer), hit install, and type in the name of the package before hitting the install button again.
+  
+  * Stuck? See the "Data collection" section in the Intro to R html.
+
+
+```{r}
+#load in the curl package
+
+
+#pull the data from the internet using your html and assign a name
+
+
+#force your data to be read as a csv
+
+
+```
+
+Now we want to make sure your data was pulled correctly, and we also want to create two separate data frames for each of the species. This way we can do stats on three data frames: raw data (original file we pulled from the internet), sailfin (all the info but just for P. latipinna), and amazon (all the info but just for P. formosa).
+
+For this step, you will need: head(), data frame selection (aka data frame[data frame$name .....])
+
+  * Stuck? See the "Data collection" section in the Intro to R html (part about creating a data frame with only certain elements)
+  
+  * Make sure you assign a new name for your new data frames! If you keep the name the same for all three data frames, R will overwrite (aka erase) your data!
+  
+```{r}
+#check the head of your raw dataframe to make sure it was read in correctly
+#NOTE: whenever you read in a csv, R automatically adds X.U.FEFF to the first column. This is normal!
+
+
+#create a dataframe for sailfin by selecting data from your raw dataframe with P. latipinna as the species.
+
+
+#create a dataframe for amazons by selecting data from your raw dataframe with P. formosa as the species.
+
+
+#check the head of your new sailfin and amazon dataframes to make sure it selected correctly.
+
+
+
+```
+
+## Analysis {.tabset .tabset-fade .tabset-pills}
+
+### Summary stats {.tabset .tabset-fade .tabset-pills}
+
+Now we get to the fun part -actually analyzing our data! While most people want to jump right in to the most complicated stat models, it's actually better practice to get an idea of what your data look like. Getting summary statistics (mean, median, mode etc) and visualizing your data give you an idea of how your data relate to each other. This will make the conclusions from the more complicated stats easier to understand.
+
+So let's begin with summary statistics. For this you will need: rstatix package, get_summary_stats()
+
+  * Make sure to install the rstatix package. See the beginning of this Rmd on how to install.
+  
+  * The summary stats you want are: mean, standard deviation, median, and interquartile range.
+  
+  * For more details on how to use get_summary_stats() see: https://www.datanovia.com/en/lessons/wilcoxon-test-in-r/#summary-statistics-2
+  
+      + ex: get_summary_stats(weight, type ="median", data=mice)
+          + the %>% used on the website requires another package, but is just specifying the data frame to use; instead use data=name in function OR specify by mice$weight.
+
+
+```{r}
+#load in the rstatix package 
+
+
+#get summary statistics for all data
+
+
+#get summary statistics for the sailfin data  #NOTE: want to get an idea of how each species looks, so we'll separate them.
+
+
+#get summary statistics for the amazon data
+
+
+
+```
+
+
+While numbers are great, a picture is often easier to understand. So let's graph out our data to get a better idea of what's going on. Box plots are a good graph to use, since it will show us the median and range of the data. 
+
+We'll focus on each treatment separately, then look at them all together. Our main goal is to see if the fish differ in how long it takes them to approach different objects.
+
+For this you will use: boxplot()
+
+  * For more info on boxplot() see: https://www.statmethods.net/graphs/boxplot.html
+  
+  * We want our boxplots to display time to approach by trial AND species. When we want to display our y value (time) by two x values (trial and species), we denote this as y~x1*x2
+  
+  * Remember to add x and y lables! 
+
+
+```{r}
+#create a box plot showing time to approach controls by trial and species
+
+
+#create a box plot showing time to approach weird-same by trial and species
+
+
+#create a box plot showing time to approach weird-diff by trial and species
+
+
+#create a box plot showing time to approach predators by trial and species
+
+
+
+```
+
+
+Now that you've done basic statistics, how does your data look? Write about the trends you see below.
+
+<font color="deeporchid4"> ***FIRST LOOK AT DATA:*** </font>
+
+
+In our analysis, we want to answer the following questions:
+
+1) In each species, is there a difference between trials 1-3 in the control experiments?
+
+## Plots {.tabset .tabset-fade .tabset-pills}
+
+
+# Predator inspection experiment {.tabset .tabset-fade .tabset-pills}
+
+## Data {.tabset .tabset-fade .tabset-pills}
+
+## Analysis {.tabset .tabset-fade .tabset-pills}
+
+## Plots {.tabset .tabset-fade .tabset-pills}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
