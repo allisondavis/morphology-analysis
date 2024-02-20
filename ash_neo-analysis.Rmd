@@ -237,10 +237,10 @@ How does your data look? Normal, sorta normal, super not normal? Write about the
 
 
 
-### Small Chunks 
+### Analysis
 
 
-To address our questions, we will first examine our data in small chunks using "simple" statistics, then take a look at the whole picture using more complex stats --aka mixed effects models.
+To address our questions, we will first examine our data in small chunks (within species), then take a look at the whole picture (between species) using mixed effects models.
 
 
 NOTE: if the data was not normal, we need to transform it before continuing. Typical transformations include log or square root transformations. Transform data, and retest for normality. You can ignore this if the data was normal.
@@ -266,50 +266,88 @@ NOTE: if the data was not normal, we need to transform it before continuing. Typ
 
 First, let's look within species.
 
-For our "simple" stats, we'll be using ANOVA and Levene's tests. ANOVAs examine differences in the mean between three+ groups, so either the mean for trial 1, 2, and 3 for amazons in one treatment, or the mean of trial 1 for amazons in all four treatments. This will tell us if the average neophobia of one trial or treatment was different than the other. Levene's test examines the variation of three+ groups. For example, if there is a lot of variation in trial 1 but very little variation in trial 2 and 3, the Levene's test can tell us if this is statistically significant (so if they habituated for weird same, or if one predator type was more scary than the others). Additionally, variation is an important question when looking at our asexual amazons: in theory, they should not have a lot of variation since they are all clones. Any variation we see in them is important and interesting!
+We'll be using generalized linear mixed models followed by Levene's tests. Mixed effects models come in two flavors: linear mixed effects and generalized linear mixed effects. In essence, linear models are used on "normal" data while generalized models can take into account small samples or non-normal distributions. 
 
-For these analyses, you will use: aov(), summary(), car package, leveneTest()
+Both types of models have two types of effects: fixed effects and random effects. Fixed effects are explanatory variables (x values) that have a fixed or finite number of levels. Random effects are also explanatory variables, but that have an infinite number of levels. To illustrate the difference, check out this video: https://www.youtube.com/watch?v=VhMWPkTbXoY&t. In this case oat type and nitrogen concentrations are fixed effects because they are explanatory variables with either 3 or 4 levels (only 3 types of oats and only 4 concentrations of nitrogen) and blocks is a random effect because there was an infinite number of possible sites they could've picked to make a block. 
+
+For our experiment, take a second to think, what are our fixed effects and random effects? Type your answer below.
+
+<font color= "deeporchid4"> ***FIXED AND RANDOM EFFECTS:***</font>
+
+
+
+Levene's test examines the variation of three+ groups. For example, if there is a lot of variation in trial 1 but very little variation in trial 2 and 3, the Levene's test can tell us if this is statistically significant (so if they habituated for weird same, or if one predator type was more scary than the others). Additionally, variation is an important question when looking at our asexual amazons: in theory, they should not have a lot of variation since they are all clones. Any variation we see in them is important and interesting!Unfortunately, the Levene's test can't take into account random effects, so we'll perform a Levene's test on the residuals of our glmm. 
+
+One more thing we have to think about is how R is dealing with our trials. While it understands that these are categories, it doesn't realize that they're related. At the moment, R compares trial 1 and 3 and 1 and 2 equally; if there is a strong correlation between 1 and 3, but not so much 1 and 2, R may still say it's significant. This doesn't really show learning across trials. We know trials 1 and 2 and 2 and 3 are more related than 1 and 3, since they follow each other. When we *order* our data, R takes into account all three trials, and tells us if how they performed in trial 3 following trial 2 following trial 1 is significant. Another way to visualize this: without ordering our data, R tries to draw line of best fit between trials 1 and 2, then 2 and 3, then 1 and 3 (three separate lines), but when we order our data, R tries to make a best fit line between ALL trials (what we want).
+
+To order the data, you will use: ordered()
+
+  * remember to *replace* the original data with this ordered data 
+  
+```{r}
+#replace the trial column with ordered trials
+  
+  
+```
+  
+***
+
+
+
+#### Mixed models  
+  
+Ok, let's get stuck into mixed models. For mixed models and Levene's test, you'll need to use the following packages: lme4, lmerTest, car, and carData. You will need to install and load them up (using the library() function).
+
+Since our dataset is small, you will use the glmer() function. You will follow it up with the summary() function.
+
+  * glmer uses the format yvalues~xvalue*xvalue[more if needed] + (1|random effect), data =dataframe
+  
+  * remember to name your mixed model so you can use it in your summary function!
+  
+  * NOTE: after ordering the data, the output of the mixed models will give you name.L and name.Q. L stands for linear and Q stands for quadradics. It's the type of model R is fitting the data to, but to be honest, I'm not 100% positive what it means if one is significant over the other... 
+  
+  * levene's test follows a similar format of y~x*x, data=df BUT remember we need the y to be the residuals from the glmer to account for our random effects. 
+
 
 ```{r}
-#is the mean for trials 1-3 different in control trials for amazons?
 
-#how about for sailfin?
-
-
-#is the mean for trials 1-3 different in weird.same trials for amazons?
-
-#how about for sailfin?
+#load the lme4, lmerTest, car, and carData packages
 
 
-#is the mean for trials 1-3 different in weird.diff trials for amazons?
-
-#how about for sailfin?
+#perform a mixed model on the time across trials for control for amazons (don't for the random effects!)
 
 
-#is the mean for trials 1-3 different in predator trials for amazons?
-
-#how about for sailfin?
+#repeat for sailfins
 
 
-#is the mean for trials 1 in all 4 treatments different for amazons?
-
-#how about for sailfin?
+#perform a mixed model on the time across trials for weird.same for amazons
 
 
-#is the mean for trials 2 in all 4 treatments different for amazons?
-
-#how about for sailfin?
+#repeat for sailfins
 
 
-#is the mean for trials 3 in all 4 treatments different for amazons?
-
-#how about for sailfin?
+#perform a mixed model on the time across trials for weird.diff for amazons
 
 
+#repeat for sailfins
 
-#repeat the combos above for variation
+
+#perform a mixed model on the time across trials for predators for amazons
+
+
+#repeat for sailfins
+
+
+#perform a mixed model on the time across trials AND treatments for amazons
+
+
+#repeat for sailfins
+
+
+
 
 ```
+
 
 ***
 
@@ -376,64 +414,18 @@ What do you see in these small chunks? Are certain treatments different within s
 
 
 
-### Complex stats 
+#### Big picture
 
 
-While it is nice to explore our data in the small chunks, to really address our questions we need to take a look at the whole picture. For this we need more complex statistical analyses--in our case, this is generalized linear mixed effects models (glmm).
-
-Mixed effects models come in two flavors: linear mixed effects and generalized linear mixed effects. In essence, linear models are used on "normal" data while generalized models can take into account small samples or non-normal distributions. 
-
-Both types of models have two types of effects: fixed effects and random effects. Fixed effects are explanatory variables (x values) that have a fixed or finite number of levels. Random effects are also explanatory variables, but that have an infinite number of levels. To illustrate the difference, check out this video: https://www.youtube.com/watch?v=VhMWPkTbXoY&t. In this case oat type and nitrogen concentrations are fixed effects because they are explanatory variables with either 3 or 4 levels (only 3 types of oats and only 4 concentrations of nitrogen) and blocks is a random effect because there was an infinite number of possible sites they could've picked to make a block./. 
-
-For our experiment, take a second to think, what are our fixed effects and random effects? Type your answer below.
-
-<font color= "deeporchid4"> ***FIXED AND RANDOM EFFECTS:***</font>
-
-
-
-One more thing we have to think about is how R is dealing with our trials. While it understands that these are categories, it doesn't realize that they're related. At the moment, R compares trial 1 and 3 and 1 and 2 equally; if there is a strong correlation between 1 and 3, but not so much 1 and 2, R may still say it's significant. This doesn't really show learning across trials. We know trials 1 and 2 and 2 and 3 are more related than 1 and 3, since they follow each other. When we *order* our data, R takes into account all three trials, and tells us if how they performed in trial 3 following trial 2 following trial 1 is significant. Another way to visualize this: without ordering our data, R tries to draw line of best fit between trials 1 and 2, then 2 and 3, then 1 and 3 (three separate lines), but when we order our data, R tries to make a best fit line between ALL trials (what we want).
-
-To order the data, you will use: ordered()
-
-  * remember to *replace* the original data with this ordered data 
-  
-```{r}
-#replace the trial column with ordered trials
-  
-  
-```
-  
-***
-
-
-
-#### Mixed models  
-  
-Ok, let's get stuck into mixed models. For mixed models, you'll need to use the following packages: lme4, lmerTest, and car. You will need to install and load them up (using the library() function).
-
-Since our dataset is small, you will use the glmer() function. You will follow it up with the summary() function.
-
-  * glmer uses the format yvalues~xvalue*xvalue[more if needed] + (1|random effect), data =dataframe
-  
-  * the glmer will also need a family= "poisson" specification (we use poisson because it can deal with small sample sizes)
-  
-  * remember to name your mixed model so you can use it in your summary function!
-  
-  * NOTE: after ordering the data, the output of the mixed models will give you name.L and name.Q. L stands for linear and Q stands for quadradics. It's the type of model R is fitting the data to, but to be honest, I'm not 100% positive what it means if one is significant over the other... 
+While it is nice to explore our data in the small chunks, to really address our questions we need to take a look at the whole picture. We'll use the glmms again for this.
 
 
 ```{r}
-
-#load the lme4 and lmerTest packages
-
-
-#perform a mixed model on the time across trial and treatments for amazons
+#perform a mixed model on the time across treatments and species (trial as additional random)
 
 
-#repeat for sailfins
+#perform a mixed model on the time across trial, treatment, and species 
 
-
-#perform a mixed model on the time across treatments and species (trial as random)
 
 
 ```
