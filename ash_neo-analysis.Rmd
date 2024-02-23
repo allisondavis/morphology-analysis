@@ -275,6 +275,40 @@ For our experiment, take a second to think, what are our fixed effects and rando
 <font color= "deeporchid4"> ***FIXED AND RANDOM EFFECTS:***</font>
 
 
+***
+
+
+#### correcting for size
+
+Since size is a continuous variable, we cannot use it as a random effect in our mixed models. So, we need to standardize individuals for size. For each species, we will standardize by subtracting the mean length from individual length and divide by the standard deviation. For example, if amazons have an average length of 10.2mm and a standard deviation of 3.7, and we wanted to standardize a fish, Charlie, who is 8.6mm, we would calculate it as `(8.6-10.2)/3.7= -0.432`. This means Charlie now has a standardized weight value of -0.432, and makes it so that if one species is much bigger than another, it doesn't bias our results. This is also known as **z-scores**. 
+
+To standardize the size, you will need: mean() and sd()
+
+  * for more info on z-scores, see: https://www.r-bloggers.com/2021/06/how-to-find-z-score-in-r-easy-calculation-quick-guide/
+
+To add it as a new column to your dataframe, you will need: cbind()
+
+  * https://www.statology.org/cbind-in-r/
+
+```{r}
+#standardize amazon lengths
+
+
+
+#standardize sailfin lengths
+
+
+#add all new columns to original dataframe; you may need to redo your species dataframes after this too
+
+```
+
+
+***
+
+
+
+#### Ordering
+
 
 Levene's test examines the variation of three+ groups. For example, if there is a lot of variation in trial 1 but very little variation in trial 2 and 3, the Levene's test can tell us if this is statistically significant (so if they habituated for weird same, or if one predator type was more scary than the others). Additionally, variation is an important question when looking at our asexual amazons: in theory, they should not have a lot of variation since they are all clones. Any variation we see in them is important and interesting!Unfortunately, the Levene's test can't take into account random effects, so we'll perform a Levene's test on the residuals of our glmm. 
 
@@ -314,31 +348,31 @@ Since our dataset is small, you will use the glmer() function. You will follow i
 #load the lme4, lmerTest, car, and carData packages
 
 
-#perform a mixed model on the time across trials for control for amazons (don't for the random effects!)
+#perform a mixed model on the time by trials and size for control for amazons (don't for the random effects!)
 
 
 #repeat for sailfins
 
 
-#perform a mixed model on the time across trials for weird.same for amazons
+#perform a mixed model on the time by trials and size for weird.same for amazons
 
 
 #repeat for sailfins
 
 
-#perform a mixed model on the time across trials for weird.diff for amazons
+#perform a mixed model on the time by trials and size for weird.diff for amazons
 
 
 #repeat for sailfins
 
 
-#perform a mixed model on the time across trials for predators for amazons
+#perform a mixed model on the time by trials and size for predators for amazons
 
 
 #repeat for sailfins
 
 
-#perform a mixed model on the time across trials AND treatments for amazons
+#perform a mixed model on the time by trials and size AND treatments for amazons
 
 
 #repeat for sailfins
@@ -421,10 +455,10 @@ While it is nice to explore our data in the small chunks, to really address our 
 
 
 ```{r}
-#perform a mixed model on the time across treatments and species (trial as additional random)
+#perform a mixed model on the time by treatments, size and species (trial as additional random)
 
 
-#perform a mixed model on the time across trial, treatment, and species 
+#perform a mixed model on the time by trial, treatment, size and species 
 
 
 
