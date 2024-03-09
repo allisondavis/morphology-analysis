@@ -67,6 +67,11 @@ raw.bld <- read.csv(raw.bld, header = TRUE, sep = ",", stringsAsFactors = TRUE)
 
 head(raw.bld)
 
+#realize that we assigned 600 to fish that never left. Will assign 1000 instead (hopefully to differentiate individuals who exited in 550s from those who never left)
+
+raw.bld$BLD1[raw.bld$BLD1 == 600] <- 1000
+raw.bld$BLD2[raw.bld$BLD2 == 600] <- 1000
+
 raw.bld$avg <- rowMeans(raw.bld[, c(3,4)], na.rm = TRUE)
 
 form.bld <- raw.bld[raw.bld$SPP =="form",]
@@ -103,6 +108,48 @@ boxplot(data=raw.bld, BLD1 ~ SPP, ylab = "Exit time (s)", main= "Boldness: Round
 
 boxplot(data=raw.bld, BLD2 ~ SPP, ylab = "Exit time (s)", main= "Boldness: Round 2")
 
+boxplot(data=raw.bld.lin, DURATION ~ ROUND*SPP, ylab = "Exit time (s)", main= "Boldness")
+
+
+shapiro.test(raw.bld$BLD1)
+shapiro.test(raw.bld$BLD2)
+hist(raw.bld$BLD1, breaks=30)
+hist(raw.bld$BLD2, breaks=30)
+
+qqnorm(raw.bld$BLD1)
+qqline(raw.bld$BLD1)
+
+qqnorm(raw.bld$BLD1)
+qqline(raw.bld$BLD1)
+
+shapiro.test(raw.bld.lin$DURATION)
+hist(raw.bld.lin$DURATION, breaks=30)
+qqnorm(raw.bld.lin$DURATION)
+qqline(raw.bld.lin$DURATION)
+
+raw.bld <- raw.bld[-c(5:8)]
+raw.bld[paste0(names(raw.bld), '_cb')] <- '^'(raw.bld[, 3:5], 1/3)
+raw.bld <- raw.bld[-c(6:7)]
+
+
+shapiro.test(raw.bld$BLD1_cb)
+shapiro.test(raw.bld$BLD2_cb)
+hist(raw.bld$BLD1_cb, breaks=30)
+hist(raw.bld$BLD2_cb, breaks=30)
+
+qqnorm(raw.bld$BLD1_cb)
+qqline(raw.bld$BLD1_cb)
+
+qqnorm(raw.bld$BLD2_cb)
+qqline(raw.bld$BLD2_cb)
+
+raw.bld.lin[paste0(names(raw.bld.lin), '_cb')] <- '^'(raw.bld[, 4], 1/3)
+
+shapiro.test(raw.bld.lin$DURATION_cb)
+hist(raw.bld.lin$DURATION_cb, breaks=30)
+qqnorm(raw.bld.lin$DURATION_cb)
+qqline(raw.bld.lin$DURATION_cb)
+
 
 ```
 
@@ -114,18 +161,42 @@ Here I will see how repeatable their behavior was from round 1 to round 2
 ```{r}
 library(ggpubr)
 
-cor.test(form.bld$BLD1, form.bld$BLD2, alternative = "two.sided", method = "spearman", use = "complete.obs")
+cor.test(form.bld$BLD1, form.bld$BLD2, alternative = "two.sided", method = "pearson", use = "complete.obs")
 
-cor.test(lat.bld$BLD1, lat.bld$BLD2, alternative = "two.sided", method = "spearman", use = "complete.obs")
+cor.test(lat.bld$BLD1, lat.bld$BLD2, alternative = "two.sided", method = "pearson", use = "complete.obs")
 
-form.cor <- ggscatter(form.bld, x = "BLD1", y = "BLD2", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "spearman", xlab = "Round 1", ylab = "Round 2", main = "Amazon molly")
+form.cor <- ggscatter(form.bld, x = "BLD1", y = "BLD2", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Round 1", ylab = "Round 2", main = "Amazon molly")
 
-lat.cor <- ggscatter(lat.bld, x = "BLD1", y = "BLD2", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "spearman", xlab = "Round 1", ylab = "Round 2", main = "Sailfin molly")
+lat.cor <- ggscatter(lat.bld, x = "BLD1", y = "BLD2", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Round 1", ylab = "Round 2", main = "Sailfin molly")
 
 
 par(mfrow=c(1,2))
 form.cor
 lat.cor
+
+
+
+###TRANSFORMED DATA
+
+form.bld <- raw.bld[raw.bld$SPP =="form",]
+head(form.bld)
+
+lat.bld <- raw.bld[raw.bld$SPP =="lat",]
+head(lat.bld)
+
+cor.test(form.bld$BLD1_cb, form.bld$BLD2_cb, alternative = "two.sided", method = "pearson", use = "complete.obs")
+
+cor.test(lat.bld$BLD1_cb, lat.bld$BLD2_cb, alternative = "two.sided", method = "pearson", use = "complete.obs")
+
+Tform.cor <- ggscatter(form.bld, x = "BLD1_cb", y = "BLD2_cb", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Round 1", ylab = "Round 2", main = "Amazon molly (trans)")
+
+Tlat.cor <- ggscatter(lat.bld, x = "BLD1_cb", y = "BLD2_cb", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Round 1", ylab = "Round 2", main = "Sailfin molly (trans)")
+
+
+par(mfrow=c(1,2))
+Tform.cor
+Tlat.cor
+
 
 
 ```
@@ -140,6 +211,13 @@ Let's see if this matches with the t-test. Both are not significant-- ***this me
 t.test(form.bld$BLD1, form.bld$BLD2, paired = TRUE, alternative = "two.sided")
 
 t.test(lat.bld$BLD1, lat.bld$BLD2, paired = TRUE, alternative = "two.sided")
+
+
+###TRANS DATA
+
+t.test(form.bld$BLD1_cb, form.bld$BLD2_cb, paired = TRUE, alternative = "two.sided")
+
+t.test(lat.bld$BLD1_cb, lat.bld$BLD2_cb, paired = TRUE, alternative = "two.sided")
 
 ```
 
@@ -160,6 +238,28 @@ t.test(form.bld$BLD1, lat.bld$BLD1, alternative = "two.sided") #sig
 t.test(form.bld$BLD2, lat.bld$BLD2, alternative = "two.sided") #not sig
 
 t.test(form.bld$avg, lat.bld$avg, alternative = "two.sided") #sig
+
+##VARIANCE
+
+var.test(form.bld$BLD1, lat.bld$BLD1, alternative = "two.sided", conf.level = 0.95)
+var.test(form.bld$BLD2, lat.bld$BLD2, alternative = "two.sided", conf.level = 0.95)
+var.test(form.bld$avg, lat.bld$avg, alternative = "two.sided", conf.level = 0.95)
+
+
+
+###TRANS DATA
+
+t.test(form.bld$BLD1_cb, lat.bld$BLD1_cb, alternative = "two.sided") #sig
+
+t.test(form.bld$BLD2_cb, lat.bld$BLD2_cb, alternative = "two.sided") #not sig
+
+t.test(form.bld$avg_cb, lat.bld$avg_cb, alternative = "two.sided") #sig
+
+##VARIANCE
+
+var.test(form.bld$BLD1_cb, lat.bld$BLD1_cb, alternative = "two.sided", conf.level = 0.95)
+var.test(form.bld$BLD2_cb, lat.bld$BLD2_cb, alternative = "two.sided", conf.level = 0.95)
+var.test(form.bld$avg_cb, lat.bld$avg_cb, alternative = "two.sided", conf.level = 0.95)
 
 
 
@@ -202,6 +302,12 @@ get_summary_stats(lat.neo, show = c("mean", "sd", "median", "iqr"))
 
 
 boxplot(data=raw.neo, Total ~ Spp, ylab = "Time to approach (s)", main="Old Object Neophobia")
+
+shapiro.test(raw.neo$Total)
+hist(raw.neo$Total, breaks=30)
+
+qqnorm(raw.neo$Total)
+qqline(raw.neo$Total)
 
 
 
