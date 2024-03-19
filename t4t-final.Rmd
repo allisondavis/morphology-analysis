@@ -383,6 +383,8 @@ boxplot(data=raw.coop, DEF ~ SPP, main= "Number of Defects")
 
 #### Species comparisons {.tabset .tabset-fade .tabset-pills}
 
+##### using proportion
+
 First, the proportion of time in the inspection zone between amazons and sailfins. 
 
 ```{r}
@@ -402,7 +404,55 @@ t.test(form.coop$DEF, lat.coop$DEF, alternative = "two.sided") #not sig
 ```
 
 
+##### using raw time
 
+Not 100% sure why I used proportion in the first place. Should also check that data is normal.
+
+```{r}
+# check normality 
+
+shapiro.test(raw.coop$INSP)
+shapiro.test(raw.coop$COOP)
+shapiro.test(raw.coop$SOLO)
+
+shapiro.test(raw.coop$P.INSP)
+shapiro.test(raw.coop$P.COOP)
+shapiro.test(raw.coop$P.SOLO)
+
+hist(raw.coop$INSP, breaks=30)
+hist(raw.coop$COOP, breaks=30)
+hist(raw.coop$SOLO, breaks=30)
+
+qqnorm(raw.coop$INSP)
+qqline(raw.coop$INSP)
+
+qqnorm(raw.coop$COOP)
+qqline(raw.coop$COOP)
+
+qqnorm(raw.coop$SOLO)
+qqline(raw.coop$SOLO)
+
+
+# transformation of solo data
+
+form.coop$SOLO_log <- log(form.coop$SOLO, 10)
+lat.coop$SOLO_log <- log(lat.coop$SOLO, 10)
+raw.coop$SOLO_log <- log(raw.coop$SOLO, 10)
+
+shapiro.test(raw.coop$SOLO_log)
+
+# t-tests
+
+t.test(form.coop$INSP, lat.coop$INSP, alternative = "two.sided")
+
+t.test(form.coop$COOP, lat.coop$COOP, alternative = "two.sided")
+
+t.test(form.coop$SOLO, lat.coop$SOLO, alternative = "two.sided")
+
+t.test(form.coop$SOLO_log, lat.coop$SOLO_log, alternative = "two.sided")
+
+
+```
 
 
 
