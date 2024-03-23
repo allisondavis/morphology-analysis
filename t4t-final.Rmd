@@ -528,6 +528,11 @@ AV1 <- ggplot(raw.bld, aes(x=SPP, y=avg, fill=SPP)) + scale_fill_manual(values =
 AV1
 
 
+NEO <- ggplot(raw.neo, aes(x=Spp, y=Total, fill=Spp)) + scale_fill_manual(values = c( "#E1AF00", "#78B7C5")) + geom_boxplot(outlier.color = "#29211F", outlier.shape = 16, outlier.size = 2, notch = FALSE) + geom_point(color= "#8D8680", size=2, alpha=0.5) +theme_classic()  + scale_y_continuous(breaks = scales::pretty_breaks(n = 6)) + theme(legend.title=element_blank()) + ylab("") + xlab("")
+NEO
+
+
+
 
 ggsave(IN, filename = "Inspection.png", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
 ggsave(CP1, filename = "Cooperation.png", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
